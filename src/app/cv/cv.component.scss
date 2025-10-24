@@ -1,0 +1,100 @@
+.cv {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #333;
+  background-color: #ffffff;
+}
+
+.cv__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cv__photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cv__header-info {
+  flex: 1;
+}
+
+.cv__name {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.cv__role {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+  color: #555;
+}
+
+.cv__contact {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.cv__contact-item {
+  margin-right: 1rem;
+}
+
+.cv__profil,
+.cv__competences,
+.cv__experience {
+  margin-bottom: 1.5rem;
+}
+
+.cv__heading {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #007acc;
+}
+
+.cv__experience-item {
+  margin-bottom: 1rem;
+}
+
+.cv__experience-title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.cv__experience-location {
+  font-style: italic;
+  margin: 0 0 0.5rem;
+}
+
+.cv__experience-tasks {
+  list-style: disc;
+  margin-left: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.cv__experience-tech {
+  font-size: 0.9rem;
+  color: #555;
+} /* src/app/cv/cv.component.scss */
+.cv { max-width: 900px; margin: 0 auto; padding: 1rem; background: #fff; color: #333; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.cv__header { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
+.cv__photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }
+.cv__name { margin: 0; font-size: 1.8rem; }
+.cv__role { margin: .2rem 0 .6rem; color: #555; }
+.cv__contact { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding: 0; margin: 0; list-style: none; font-size: .95rem; }
+.cv__heading { font-size: 1.25rem; color: #0a66c2; margin: 1rem 0 .5rem; }
+.cv__experience-item { margin-bottom: 1rem; }
+.cv__experience-title { margin: 0 0 .2rem; font-weight: 600; }
+.cv__experience-tasks { list-style: disc; margin: .25rem 0 .5rem 1.2rem; }
+.cv__experience-tech { font-size: .95rem; color: #555; margin: 0 0 .5rem; }
+.cv__projet { border-left: 3px solid #e6f0fb; padding-left: .75rem; margin: .5rem 0; }

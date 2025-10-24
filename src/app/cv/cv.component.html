@@ -1,0 +1,102 @@
+<!-- src/app/cv/cv.component.html -->
+<section class="cv" tabindex="0">
+  <header class="cv__header">
+    <img class="cv__photo" src="assets/cv-profile.jpeg" alt="Photo de Yassine Hannachi" />
+    <div class="cv__header-info">
+      <h1 class="cv__name">{{ infos.nom }}</h1>
+      <p class="cv__role">{{ infos.titre }}</p>
+      <ul class="cv__contact" role="list">
+        <li class="cv__contact-item">{{ infos.adresse }}</li>
+        <li class="cv__contact-item"><a [href]="'tel:' + infos.tel">{{ infos.tel }}</a></li>
+        <li class="cv__contact-item"><a [href]="'mailto:' + infos.email">{{ infos.email }}</a></li>
+        <li class="cv__contact-item"><a rel="external noopener" [href]="infos.linkedin">LinkedIn</a></li>
+        <li class="cv__contact-item">Préavis : {{ infos.preavis }}</li>
+        <li class="cv__contact-item">{{ infos.age }}</li>
+        <li class="cv__contact-item">{{ infos.nationalite }}</li>
+        <li class="cv__contact-item">{{ infos.statut }}</li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="cv__profil">
+    <h2 class="cv__heading">Profil</h2>
+    <p>{{ profil }}</p>
+  </section>
+
+  <section class="cv__competences">
+    <h2 class="cv__heading">Compétences</h2>
+    <ul role="list">
+      <li>Langages & Frameworks : {{ competences.langagesFrameworks.join(', ') }}</li>
+      <li>Autres outils : {{ competences.outils.join(', ') }}</li>
+      <li>Serveurs d’applications : {{ competences.serveurs.join(', ') }}</li>
+      <li>Bases de données : {{ competences.bdd.join(', ') }}</li>
+      <li>Systèmes d’exploitation : {{ competences.systemes.join(', ') }}</li>
+      <li>Méthodologies : {{ competences.methodos.join(', ') }}</li>
+      <li>IDE : {{ competences.ide.join(', ') }}</li>
+    </ul>
+  </section>
+
+  <section class="cv__experience">
+    <h2 class="cv__heading">Expériences</h2>
+
+    <article *ngFor="let exp of experiences; trackBy: trackByIndex" class="cv__experience-item">
+      <h3 class="cv__experience-title">
+        {{ exp.poste }} – {{ exp.entreprise }} ({{ exp.periode }}) – {{ exp.localisation }}
+      </h3>
+
+      <p *ngIf="exp.projet" class="cv__experience-location">
+        Projet : {{ exp.projet }}
+      </p>
+      <p *ngIf="exp.client">Client : {{ exp.client }}</p>
+      <p *ngIf="exp.equipe">Équipe : {{ exp.equipe }}</p>
+      <p *ngIf="exp.role">Rôle : {{ exp.role }}</p>
+
+      <!-- Cas 1 : missions directes -->
+      <ul *ngIf="exp.missions?.length" class="cv__experience-tasks" role="list">
+        <li *ngFor="let m of (exp.missions ); trackBy: trackByIndex">{{ m }}</li>
+      </ul>
+      <p *ngIf="exp.technologies?.length" class="cv__experience-tech">
+        Technologies : {{ (exp.technologies??[]).join(', ') }}
+      </p>
+
+      <!-- Cas 2 : projets imbriqués -->
+      <section *ngIf="exp.projets?.length">
+        <div *ngFor="let p of exp.projets; trackBy: trackByIndex" class="cv__projet">
+          <h4 class="cv__projet-titre">{{ p.titre }}</h4>
+          <p *ngIf="p.contexte">{{ p.contexte }}</p>
+          <p *ngIf="p.equipe">Équipe : {{ p.equipe }}</p>
+          <p *ngIf="p.role">Rôle : {{ p.role }}</p>
+          <ul class="cv__experience-tasks" role="list">
+            <li *ngFor="let pm of (p.missions); trackBy: trackByIndex">{{ pm }}</li>
+          </ul>
+          <p class="cv__experience-tech">
+            Technologies : {{ (p.technologies).join(', ') }}
+          </p>
+        </div>
+      </section>
+    </article>
+  </section>
+
+  <section class="cv__formation">
+    <h2 class="cv__heading">Formation</h2>
+    <ul role="list">
+      <li *ngFor="let f of formation; trackBy: trackByIndex">
+        {{ f.etab }} — {{ f.periode }} — {{ f.diplome }}
+      </li>
+    </ul>
+  </section>
+
+  <section class="cv__langues">
+    <h2 class="cv__heading">Langues</h2>
+    <ul role="list">
+      <li *ngFor="let l of langues; trackBy: trackByIndex">{{ l.langue }} : {{ l.niveau }}</li>
+    </ul>
+  </section>
+
+  <section class="cv__certificats">
+    <h2 class="cv__heading">Certificats & Formations</h2>
+    <ul role="list">
+      <li *ngFor="let c of certificats; trackBy: trackByIndex">{{ c }}</li>
+    </ul>
+  </section>
+</section>
