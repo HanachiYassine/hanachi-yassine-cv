@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin CV - Yassine Hannachi</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        textarea,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .actions button {
+            width: auto;
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="login-view" class="login-form">
+        <h2>Connexion Admin</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Mot de passe" required>
+            <button type="submit">Se connecter</button>
+        </form>
+    </div>
+
+    <div id="admin-view" class="container hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Gestion des Expériences</h1>
+            <button onclick="logout()" style="width: auto; background: #6c757d;">Déconnexion</button>
+        </div>
+
+        <button onclick="openModal()" style="width: auto; margin-bottom: 20px;">+ Nouvelle Expérience</button>
+
+        <table id="experiencesTable">
+            <thead>
+                <tr>
+                    <th>Poste</th>
+                    <th>Entreprise</th>
+                    <th>Période</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Modal Form -->
+    <div id="experienceModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Ajouter/Modifier Expérience</h2>
+            <form id="experienceForm">
+                <input type="hidden" id="expId">
+                <div class="form-group">
+                    <label>Poste</label>
+                    <input type="text" id="expPoste" required>
+                </div>
+                <div class="form-group">
+                    <label>Entreprise</label>
+                    <input type="text" id="expEntreprise" required>
+                </div>
+                <div class="form-group">
+                    <label>Localisation</label>
+                    <input type="text" id="expLocalisation">
+                </div>
+                <div class="form-group">
+                    <label>Période</label>
+                    <input type="text" id="expPeriode" required>
+                </div>
+                <div class="form-group">
+                    <label>Projet (Global)</label>
+                    <input type="text" id="expProjet">
+                </div>
+                <div class="form-group">
+                    <label>Client</label>
+                    <input type="text" id="expClient">
+                </div>
+                <div class="form-group">
+                    <label>Équipe</label>
+                    <input type="text" id="expEquipe">
+                </div>
+                <div class="form-group">
+                    <label>Rôle</label>
+                    <input type="text" id="expRole">
+                </div>
+                <div class="form-group">
+                    <label>Missions (une par ligne)</label>
+                    <textarea id="expMissions" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Technologies (séparées par virgule)</label>
+                    <input type="text" id="expTechnologies">
+                </div>
+
+                <h3>Sous-projets (JSON)</h3>
+                <p>Format: [{"titre": "...", "contexte": "...", "missions": ["..."], "technologies": ["..."]}]</p>
+                <textarea id="expProjets" rows="5"></textarea>
+
+                <button type="submit">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/admin';
+        let token = localStorage.getItem('token');
+
+        if (token) {
+            showAdmin();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    token = data.token;
+                    localStorage.setItem('token', token);
+                    showAdmin();
+                } else {
+                    alert('Identifiants incorrects');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erreur de connexion');
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            location.reload();
+        }
+
+        function showAdmin() {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.remove('hidden');
+            loadExperiences();
+        }
+
+        async function loadExperiences() {
+            try {
+                const res = await fetch(`${API_URL}/experiences`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const experiences = await res.json();
+                const tbody = document.querySelector('#experiencesTable tbody');
+                tbody.innerHTML = '';
+                experiences.forEach(exp => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>${exp.poste}</td>
+                    <td>${exp.entreprise}</td>
+                    <td>${exp.periode}</td>
+                    <td class="actions">
+                        <button onclick="editExperience(${exp.id})">Modifier</button>
+                        <button class="btn-delete" onclick="deleteExperience(${exp.id})">Supprimer</button>
+                    </td>
+                `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                if (err.status === 401 || err.status === 403) logout();
+            }
+        }
+
+        async function deleteExperience(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette expérience ?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/experiences/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) loadExperiences();
+                else alert('Erreur lors de la suppression');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        let currentExpId = null;
+
+        function openModal() {
+            currentExpId = null;
+            document.getElementById('experienceForm').reset();
+            document.getElementById('modalTitle').innerText = 'Ajouter Expérience';
+            document.getElementById('experienceModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('experienceModal').classList.add('hidden');
+        }
+
+        async function editExperience(id) {
+            currentExpId = id;
+            document.getElementById('modalTitle').innerText = 'Modifier Expérience';
+
+            const res = await fetch(`${API_URL}/experiences/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const exp = await res.json();
+
+            document.getElementById('expId').value = exp.id;
+            document.getElementById('expPoste').value = exp.poste;
+            document.getElementById('expEntreprise').value = exp.entreprise;
+            document.getElementById('expLocalisation').value = exp.localisation || '';
+            document.getElementById('expPeriode').value = exp.periode;
+            document.getElementById('expProjet').value = exp.projet || '';
+            document.getElementById('expClient').value = exp.client || '';
+            document.getElementById('expEquipe').value = exp.equipe || '';
+            document.getElementById('expRole').value = exp.role || '';
+            document.getElementById('expMissions').value = (exp.missions || []).join('\n');
+            document.getElementById('expTechnologies').value = (exp.technologies || []).join(', ');
+            document.getElementById('expProjets').value = JSON.stringify(exp.projets || [], null, 2);
+
+            document.getElementById('experienceModal').classList.remove('hidden');
+        }
+
+        document.getElementById('experienceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                poste: document.getElementById('expPoste').value,
+                entreprise: document.getElementById('expEntreprise').value,
+                localisation: document.getElementById('expLocalisation').value,
+                periode: document.getElementById('expPeriode').value,
+                projet: document.getElementById('expProjet').value,
+                client: document.getElementById('expClient').value,
+                equipe: document.getElementById('expEquipe').value,
+                role: document.getElementById('expRole').value,
+                missions: document.getElementById('expMissions').value.split('\n').filter(line => line.trim() !== ''),
+                technologies: document.getElementById('expTechnologies').value.split(',').map(t => t.trim()).filter(t => t !== ''),
+                projets: []
+            };
+
+            try {
+                const projetsJson = document.getElementById('expProjets').value;
+                if (projetsJson.trim()) {
+                    data.projets = JSON.parse(projetsJson);
+                }
+            } catch (err) {
+                alert('Erreur dans le JSON des sous-projets');
+                return;
+            }
+
+            const method = currentExpId ? 'PUT' : 'POST';
+            const url = currentExpId ? `${API_URL}/experiences/${currentExpId}` : `${API_URL}/experiences`;
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    closeModal();
+                    loadExperiences();
+                } else {
+                    alert('Erreur lors de l\'enregistrement');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erreur technique');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

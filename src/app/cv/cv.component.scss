@@ -1,16 +1,316 @@
+// src/app/cv/cv.component.scss
+
+$color-primary: #2c3e50; // Dark blue/grey for left column
+$color-secondary: #34495e; // Slightly lighter for headers in left
+$color-text-light: #ecf0f1;
+$color-text-dark: #2c3e50;
+$color-accent: #3498db; // For links or highlights if needed
+$font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+:host {
+  display: block;
+  font-family: $font-stack;
+  color: $color-text-dark;
+  background-color: #bdc3c7; // Background for the page outside the CV
+  min-height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.cv-container {
+  display: flex;
+  flex-direction: row;
+  max-width: 1000px; // A4 width approx
+  margin: 0 auto;
+  background-color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  min-height: 1100px; // Min height for A4 look
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+// --- LEFT COLUMN ---
+.cv-left {
+  width: 30%;
+  background-color: $color-primary;
+  color: $color-text-light;
+  padding: 2rem;
+  box-sizing: border-box;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  a {
+    color: $color-text-light;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.cv-photo-container {
+  text-align: center;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cv-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+}
+
+.cv-download-btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover {
+    background-color: white;
+    color: $color-primary;
+    text-decoration: none;
+  }
+}
+
+.cv-section-left {
+  margin-bottom: 2rem;
+}
+
+.cv-section-title-left {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.cv-list-left {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+
+  li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+
+    .icon {
+      margin-right: 0.5rem;
+      min-width: 20px;
+    }
+  }
+}
+
+.cv-item-left {
+  margin-bottom: 1rem;
+
+  .cv-date {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin: 0;
+  }
+
+  .cv-degree {
+    font-weight: bold;
+    margin: 0.2rem 0;
+  }
+
+  .cv-school {
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+// --- RIGHT COLUMN ---
+.cv-right {
+  width: 70%;
+  padding: 3rem;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 2rem;
+  }
+}
+
+.cv-header {
+  margin-bottom: 3rem;
+  border-bottom: 2px solid $color-primary;
+  padding-bottom: 1rem;
+}
+
+.cv-name {
+  font-size: 2.5rem;
+  margin: 0;
+  color: $color-primary;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.cv-title {
+  font-size: 1.2rem;
+  margin: 0.5rem 0 0;
+  color: lighten($color-primary, 20%);
+  font-weight: normal;
+}
+
+.cv-section {
+  margin-bottom: 2.5rem;
+}
+
+.cv-section-title {
+  font-size: 1.3rem;
+  color: $color-primary;
+  text-transform: uppercase;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.cv-text {
+  line-height: 1.6;
+  text-align: justify;
+}
+
+// Skills Grid
+.cv-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cv-skill-group {
+  h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: $color-secondary;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}
+
+// Experience
+.cv-experience-item {
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.cv-experience-header {
+  margin-bottom: 0.5rem;
+}
+
+.cv-experience-role {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: $color-primary;
+  margin: 0;
+}
+
+.cv-experience-company {
+  font-weight: 600;
+  color: #555;
+}
+
+.cv-experience-date {
+  float: right;
+  font-weight: bold;
+  color: #7f8c8d;
+
+  @media (max-width: 600px) {
+    float: none;
+    display: block;
+  }
+}
+
+.cv-experience-details {
+  font-size: 0.95rem;
+  line-height: 1.5;
+
+  p {
+    margin: 0.3rem 0;
+  }
+}
+
+.cv-missions {
+  margin: 0.5rem 0;
+  padding-left: 1.2rem;
+
+  li {
+    margin-bottom: 0.2rem;
+  }
+}
+
+.cv-techs {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #555;
+}
+
+.cv-sub-projects {
+  margin-top: 1rem;
+  border-left: 3px solid #eee;
+  padding-left: 1rem;
+}
+
+.cv-sub-project {
+  margin-bottom: 1rem;
+}
+
+.cv-sub-project-title {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+  color: $color-secondary;
+}
+
+/* src/app/cv/cv.component.scss */
 .cv {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 1rem;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #fff;
   color: #333;
-  background-color: #ffffff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 .cv__header {
   display: flex;
-  align-items: center;
   gap: 1rem;
+  align-items: center;
   margin-bottom: 1.5rem;
 }
 
@@ -21,45 +321,30 @@
   object-fit: cover;
 }
 
-.cv__header-info {
-  flex: 1;
-}
-
 .cv__name {
-  font-size: 1.8rem;
   margin: 0;
+  font-size: 1.8rem;
 }
 
 .cv__role {
-  font-size: 1.2rem;
-  margin: 0 0 0.5rem;
+  margin: .2rem 0 .6rem;
   color: #555;
 }
 
 .cv__contact {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.cv__contact-item {
-  margin-right: 1rem;
-}
-
-.cv__profil,
-.cv__competences,
-.cv__experience {
-  margin-bottom: 1.5rem;
+  gap: .5rem 1rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: .95rem;
 }
 
 .cv__heading {
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
-  color: #007acc;
+  font-size: 1.25rem;
+  color: #0a66c2;
+  margin: 1rem 0 .5rem;
 }
 
 .cv__experience-item {
@@ -67,34 +352,23 @@
 }
 
 .cv__experience-title {
+  margin: 0 0 .2rem;
   font-weight: 600;
-  margin: 0;
-}
-
-.cv__experience-location {
-  font-style: italic;
-  margin: 0 0 0.5rem;
 }
 
 .cv__experience-tasks {
   list-style: disc;
-  margin-left: 1.2rem;
-  margin-bottom: 0.5rem;
+  margin: .25rem 0 .5rem 1.2rem;
 }
 
 .cv__experience-tech {
-  font-size: 0.9rem;
+  font-size: .95rem;
   color: #555;
-} /* src/app/cv/cv.component.scss */
-.cv { max-width: 900px; margin: 0 auto; padding: 1rem; background: #fff; color: #333; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-.cv__header { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
-.cv__photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }
-.cv__name { margin: 0; font-size: 1.8rem; }
-.cv__role { margin: .2rem 0 .6rem; color: #555; }
-.cv__contact { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding: 0; margin: 0; list-style: none; font-size: .95rem; }
-.cv__heading { font-size: 1.25rem; color: #0a66c2; margin: 1rem 0 .5rem; }
-.cv__experience-item { margin-bottom: 1rem; }
-.cv__experience-title { margin: 0 0 .2rem; font-weight: 600; }
-.cv__experience-tasks { list-style: disc; margin: .25rem 0 .5rem 1.2rem; }
-.cv__experience-tech { font-size: .95rem; color: #555; margin: 0 0 .5rem; }
-.cv__projet { border-left: 3px solid #e6f0fb; padding-left: .75rem; margin: .5rem 0; }
+  margin: 0 0 .5rem;
+}
+
+.cv__projet {
+  border-left: 3px solid #e6f0fb;
+  padding-left: .75rem;
+  margin: .5rem 0;
+}

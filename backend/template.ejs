@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - <%= infos.nom %>
+    </title>
+    <style>
+        /* Copied from cv.component.scss and adapted for simple HTML/PDF */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        /* Bande gauche pleine hauteur sur TOUTES les pages du PDF */
+        @media print {
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 30%;
+                /* même valeur que .cv-left */
+                height: 100vh;
+                /* pleine hauteur de la page */
+                background: #2c3e50;
+                z-index: -1;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        .cv-container {
+            display: flex;
+            flex-direction: row;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: transparent;
+            /* box-shadow removed for PDF */
+        }
+
+        /* LEFT COLUMN */
+        .cv-left {
+            width: 30%;
+            background-color: transparent;
+            color: #ecf0f1;
+            padding: 2rem;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .cv-left a {
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+
+        .cv-photo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cv-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cv-section-left {
+            margin-bottom: 2rem;
+        }
+
+        .cv-section-title-left {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .cv-list-left {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .cv-list-left li {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .cv-list-left li .icon {
+            margin-right: 0.5rem;
+            min-width: 20px;
+        }
+
+        .cv-item-left {
+            margin-bottom: 1rem;
+        }
+
+        .cv-date {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .cv-degree {
+            font-weight: bold;
+            margin: 0.2rem 0;
+        }
+
+        .cv-school {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* RIGHT COLUMN */
+        .cv-right {
+            width: 70%;
+            padding: 3rem;
+            box-sizing: border-box;
+        }
+
+        .cv-header {
+            margin-bottom: 3rem;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 1rem;
+        }
+
+        .cv-name {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #2c3e50;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .cv-title {
+            font-size: 1.2rem;
+            margin: 0.5rem 0 0;
+            color: #5d6d7e;
+            /* lighten($color-primary, 20%) */
+            font-weight: normal;
+        }
+
+        .cv-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .cv-section-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            text-transform: uppercase;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .cv-text {
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        /* Skills Grid */
+        .cv-skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .cv-skill-group h4 {
+            margin: 0 0 0.5rem;
+            font-size: 1rem;
+            color: #34495e;
+        }
+
+        .cv-skill-group p {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Experience */
+        .cv-experience-item {
+            margin-bottom: 2rem;
+        }
+
+        .cv-experience-header {
+            margin-bottom: 0.5rem;
+        }
+
+        .cv-experience-role {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .cv-experience-company {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .cv-experience-date {
+            float: right;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+
+        .cv-experience-details {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .cv-experience-details p {
+            margin: 0.3rem 0;
+        }
+
+        .cv-missions {
+            margin: 0.5rem 0;
+            padding-left: 1.2rem;
+        }
+
+        .cv-missions li {
+            margin-bottom: 0.2rem;
+        }
+
+        .cv-techs {
+            margin-top: 0.5rem;
+            font-style: italic;
+            color: #555;
+        }
+
+        .cv-sub-projects {
+            margin-top: 1rem;
+            border-left: 3px solid #eee;
+            padding-left: 1rem;
+        }
+
+        .cv-sub-project {
+            margin-bottom: 1rem;
+        }
+
+        .cv-sub-project-title {
+            margin: 0 0 0.3rem;
+            font-size: 1rem;
+            color: #34495e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cv-container" id="cv-container">
+        <aside class="cv-left">
+            <div class="cv-photo-container">
+                <% if (typeof photoBase64 !=='undefined' && photoBase64) { %>
+                    <img class="cv-photo" src="<%= photoBase64 %>" alt="Photo de Yassine Hannachi" />
+                    <% } %>
+            </div>
+
+            <section class="cv-section-left">
+                <h3 class="cv-section-title-left">CONTACT</h3>
+                <ul class="cv-list-left">
+                    <li><span class="icon">📍</span>
+                        <%= infos.adresse %>
+                    </li>
+                    <li><span class="icon">📞</span> <a href="tel:<%= infos.tel %>">
+                            <%= infos.tel %>
+                        </a></li>
+                    <li><span class="icon">✉️</span> <a href="mailto:<%= infos.email %>">
+                            <%= infos.email %>
+                        </a></li>
+                    <li><span class="icon">🔗</span> <a href="<%= infos.linkedin %>" target="_blank">LinkedIn</a></li>
+                    <li><span class="icon">🎂</span>
+                        <%= infos.age %>
+                    </li>
+                    <li><span class="icon">🌍</span>
+                        <%= infos.nationalite %>
+                    </li>
+                    <li><span class="icon">💍</span>
+                        <%= infos.statut %>
+                    </li>
+                    <li><span class="icon">⏳</span> Préavis : <%= infos.preavis %>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="cv-section-left">
+                <h3 class="cv-section-title-left">FORMATION</h3>
+                <% formation.forEach(function(f) { %>
+                    <div class="cv-item-left">
+                        <p class="cv-date">
+                            <%= f.periode %>
+                        </p>
+                        <p class="cv-degree">
+                            <%= f.diplome %>
+                        </p>
+                        <p class="cv-school">
+                            <%= f.etab %>
+                        </p>
+                    </div>
+                    <% }); %>
+            </section>
+
+            <section class="cv-section-left">
+                <h3 class="cv-section-title-left">LANGUES</h3>
+                <ul class="cv-list-left">
+                    <% langues.forEach(function(l) { %>
+                        <li><strong>
+                                <%= l.langue %>
+                            </strong> : <%= l.niveau %>
+                        </li>
+                        <% }); %>
+                </ul>
+            </section>
+
+            <section class="cv-section-left">
+                <h3 class="cv-section-title-left">CERTIFICATS & FORMATIONS</h3>
+                <ul class="cv-list-left">
+                    <% certificats.forEach(function(c) { %>
+                        <li>
+                            <%= c %>
+                        </li>
+                        <% }); %>
+                </ul>
+            </section>
+
+            <section class="cv-section-left">
+                <h3 class="cv-section-title-left">CENTRES D’INTÉRÊT</h3>
+                <ul class="cv-list-left">
+                    <% centresInteret.forEach(function(c) { %>
+                        <li>
+                            <%= c %>
+                        </li>
+                        <% }); %>
+                </ul>
+            </section>
+        </aside>
+
+        <main class="cv-right">
+            <header class="cv-header">
+                <h1 class="cv-name">
+                    <%= infos.nom %>
+                </h1>
+                <h2 class="cv-title">
+                    <%= infos.titre %>
+                </h2>
+            </header>
+
+            <section class="cv-section">
+                <h3 class="cv-section-title">PROFIL</h3>
+                <p class="cv-text">
+                    <%= profil %>
+                </p>
+            </section>
+
+            <section class="cv-section">
+                <h3 class="cv-section-title">COMPÉTENCES</h3>
+                <div class="cv-skills-grid">
+                    <div class="cv-skill-group">
+                        <h4>Langages & Frameworks</h4>
+                        <p>
+                            <%= competences.langagesFrameworks.join(', ') %></p>
+                    </div>
+                    <div class="cv-skill-group">
+                        <h4>Bases de données</h4>
+                        <p><%= competences.bdd.join(' , ') %></p>
+                    </div>
+                    <div class="cv-skill-group">
+                        <h4>Outils & CI/CD</h4>
+                        <p><%= competences.outils.join(' , ') %></p>
+                    </div>
+                    <div class="cv-skill-group">
+                        <h4>Serveurs</h4>
+                        <p><%= competences.serveurs.join(' , ') %></p>
+                    </div>
+                    <div class="cv-skill-group">
+                        <h4>Méthodologies</h4>
+                        <p><%= competences.methodos.join(' , ') %></p>
+                    </div>
+                    <div class="cv-skill-group">
+                        <h4>IDE & Systèmes</h4>
+                        <p><%= competences.ide.join(' , ') %>, <%= competences.systemes.join(' , ') %></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cv-section">
+                <h3 class="cv-section-title">EXPÉRIENCES PROFESSIONNELLES</h3>
+                <% experiences.forEach(function(exp) { %>
+                <article class="cv-experience-item">
+                    <div class="cv-experience-header">
+                        <h4 class="cv-experience-role"><%= exp.poste %></h4>
+                        <span class="cv-experience-company"><%= exp.entreprise %> | <%= exp.localisation %></span>
+                        <span class="cv-experience-date"><%= exp.periode %></span>
+                    </div>
+
+                    <div class="cv-experience-details">
+                        <% if (exp.projet) { %><p><strong>Projet:</strong> <%= exp.projet %></p><% } %>
+                        <% if (exp.client) { %><p><strong>Client:</strong> <%= exp.client %></p><% } %>
+                        <% if (exp.equipe) { %><p><strong>Équipe:</strong> <%= exp.equipe %></p><% } %>
+
+                        <% if (exp.missions && exp.missions.length) { %>
+                        <ul class="cv-missions">
+                            <% exp.missions.forEach(function(m) { %>
+                            <li><%= m %></li>
+                            <% }); %>
+                        </ul>
+                        <% } %>
+
+                        <% if (exp.technologies && exp.technologies.length) { %>
+                        <p class="cv-techs">
+                            <strong>Environnement technique:</strong> <%= exp.technologies.join(' , ') %>
+                        </p>
+                        <% } %>
+
+                        <!-- Sub-projects -->
+                        <% if (exp.projets && exp.projets.length) { %>
+                        <div class="cv-sub-projects">
+                            <% exp.projets.forEach(function(p) { %>
+                            <div class="cv-sub-project">
+                                <h5 class="cv-sub-project-title"><%= p.titre %></h5>
+                                <% if (p.contexte) { %><p><%= p.contexte %></p><% } %>
+                                
+                                <% if (p.missions && p.missions.length) { %>
+                                <ul class="cv-missions">
+                                    <% p.missions.forEach(function(pm) { %>
+                                    <li><%= pm %></li>
+                                    <% }); %>
+                                </ul>
+                                <% } %>
+
+                                <% if (p.technologies && p.technologies.length) { %>
+                                <p class="cv-techs">
+                                    <strong>Environnement technique:</strong> <%= p.technologies.join(' , ') %>
+                                </p>
+                                <% } %>
+                            </div>
+                            <% }); %>
+                        </div>
+                        <% } %>
+                    </div>
+                </article>
+                <% }); %>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
