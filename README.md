@@ -143,7 +143,7 @@ L’ancien script `node migrate-from-data.js` reste un import explicite de `data
 
 | Méthode et route | Fonction |
 |---|---|
-| `GET /health` | Disponibilité du backend après initialisation de la base |
+| `GET /health` | Disponibilité du backend après initialisation de la base ; commit en cours sur Render |
 | `GET /api/cv` | Toutes les données publiques du CV au format JSON |
 | `GET /api/pdf` | CV PDF A4 généré depuis les données courantes |
 | `POST /api/admin/login` | Connexion avec `email` et `password`, retourne un JWT |
@@ -183,7 +183,15 @@ npm run test:pdf
 
 Les neuf tests d’intégration utilisent des bases temporaires : données initiales, authentification, modification du CV, sous-projets avec équipes et rôles, sauvegardes sans comptes, restauration, rollback, mise à niveau d’un ancien schéma et conservation des données au redémarrage. Ils ont été validés localement le 10 octobre 2026. La connexion réelle à Turso, l’import des sept expériences et neuf sous-projets, leur cohérence avec `data.json`, les relations SQL et deux sauvegardes ont également été vérifiés à cette date.
 
-`test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La construction du conteneur, les sept tests backend alors présents, la génération réelle du PDF et la compilation Angular ont été validés le 10 octobre 2026 dans [GitHub Actions](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38015881232). Le déploiement public reste à vérifier après activation de Render et GitHub Pages.
+À la racine, avec Node.js 22.12+, vérifier les contrôles de publication :
+
+```bash
+node --test scripts/check-live-backend.test.cjs
+```
+
+Ces six tests simulent un déploiement progressif et vérifient que la publication est bloquée si le commit reste ancien, si le CV est incomplet, si CORS empêche le navigateur d’accéder à l’API ou si le PDF est invalide ou en erreur. Ils ont été validés localement le 10 octobre 2026.
+
+`test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La construction du conteneur, les neuf tests backend, la génération réelle du PDF et la compilation Angular ont été validés le 10 octobre 2026 dans [GitHub Actions](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38021956315). Le déploiement public reste à vérifier après activation de Render et GitHub Pages.
 
 Le script frontend historique `npm test` lance Karma et ses anciens tests de modèle. Il n’est pas utilisé comme validation du déploiement ; la compilation de production et les tests backend sont les contrôles du workflow. Cypress n’a pas de suite dédiée configurée dans ce projet.
 
@@ -209,7 +217,7 @@ Le compte administrateur n’est pas encore créé dans cette base. Il sera init
 
 ### 2. Backend Render
 
-Créer un Blueprint à partir de ce dépôt et de `render.yaml`. Il définit un service Docker sur l’offre `free`, un contrôle `/health` et le mode Turso. Renseigner dans Render :
+[Créer le backend sur Render à partir de ce dépôt](https://render.com/deploy?repo=https://github.com/HanachiYassine/hanachi-yassine-cv), puis utiliser le Blueprint `render.yaml`. Il définit un service Docker sur l’offre `free`, un contrôle `/health` et le mode Turso. Renseigner dans Render :
 
 - `TURSO_DATABASE_URL`, préremplie avec l’URL de la base du projet ; à vérifier lors de la création du service.
 - `TURSO_AUTH_TOKEN`, à saisir dans le paramètre sécurisé correspondant.
@@ -228,7 +236,7 @@ Dans les paramètres du dépôt :
 3. Ajouter le secret Actions `RENDER_DEPLOY_HOOK_URL`, obtenu dans les paramètres du service Render. Cette URL doit rester secrète.
 4. Exécuter le workflow **Vérification et déploiement du CV**, ou pousser une modification sur `main`.
 
-Le workflow vérifie la configuration de publication, construit et teste le conteneur backend, vérifie le PDF réel, compile Angular avec l’adresse de l’API puis déclenche Render pour le commit vérifié et publie le frontend sur Pages. Le déclenchement Render lance un déploiement asynchrone ; sa réussite doit être confirmée dans Render. Tant que les paramètres de déploiement manquent, leur contrôle échoue explicitement et aucun site n’est publié. Après publication, les modifications effectuées depuis l’administration sont visibles au prochain chargement du CV, sans commit ni reconstruction Angular.
+Le workflow vérifie la configuration de publication, construit et teste le conteneur backend, vérifie le PDF réel, compile Angular avec l’adresse de l’API puis déclenche Render pour le commit vérifié et publie le frontend sur Pages. Le déclenchement Render lance un déploiement asynchrone. Avant de publier Pages, le workflow attend jusqu’à vingt minutes que `/health` annonce le commit vérifié via `RENDER_GIT_COMMIT`, puis contrôle le chargement du CV, les en-têtes CORS pour l’origine Pages et une génération PDF réelle. Un échec bloque la publication du frontend ; un ancien backend encore disponible ne suffit pas à valider le nouveau déploiement. Tant que les paramètres de déploiement manquent, leur contrôle échoue explicitement et aucun site n’est publié. Après publication, les modifications effectuées depuis l’administration sont visibles au prochain chargement du CV, sans commit ni reconstruction Angular.
 
 Le paramètre `autoDeployTrigger: 'off'` évite un déploiement Render avant les contrôles GitHub Actions. Les jetons Turso et mots de passe ne sont jamais intégrés à la compilation Angular.
 

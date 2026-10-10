@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Vérifier les contrôles du backend en ligne
+        run: node --test scripts/check-live-backend.test.cjs
       - name: Construire le conteneur du backend
         run: docker build --tag cv-backend .
       - name: Vérifier API, transactions et sauvegardes dans le conteneur
@@ -54,9 +56,12 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: [backend, frontend, deployment-config]
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     env:
       RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
     steps:
+      - uses: actions/checkout@v6
       - name: Déclencher le déploiement Render du commit vérifié
         shell: bash
         run: |
@@ -64,8 +69,10 @@ jobs:
             echo "Configurer le secret RENDER_DEPLOY_HOOK_URL."
             exit 1
           fi
-          curl --fail --silent --show-error --output /dev/null \
+          curl --fail --silent --show-error --connect-timeout 15 --max-time 60 --output /dev/null \
             --get --data-urlencode "ref=${GITHUB_SHA}" "$RENDER_DEPLOY_HOOK_URL"
+      - name: Attendre le commit Render et vérifier CV, CORS et PDF
+        run: node scripts/check-live-backend.cjs
   deploy-pages:
     if: github.ref == 'refs/heads/main'
     needs: [backend, frontend, deploy-backend]

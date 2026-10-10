@@ -35,7 +35,7 @@ app.use('/api/admin', auth.router);
 // Admin Experience Routes
 app.use('/api/admin/experiences', adminExperiencesRoutes);
 app.use('/api/admin', require('./admin-cv.routes'));
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', (req, res) => res.json({ status: 'ok', commit: process.env.RENDER_GIT_COMMIT || undefined }));
 
 // PDF généré depuis le même CV que l’API publique.
 app.get('/api/pdf', require('./http-utils').route(async (req, res) => {
