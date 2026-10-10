@@ -32,8 +32,19 @@ async function checkCv(config) {
     const response = await request(config, '/api/cv');
     checkCors(response, config);
     const cv = validateCv(await response.json());
-    assert.ok(cv.experiences.length, 'Le CV publié ne contient aucune expérience.');
-    console.log(`CV chargé : ${cv.experiences.length} expériences.`);
+    const projects = cv.experiences.flatMap(exp => exp.projets || []).length;
+    assert.equal(cv.experiences.length, 7, 'Le CV publié doit contenir les sept expériences.');
+    assert.equal(projects, 9, 'Le CV publié doit contenir les neuf sous-projets.');
+    console.log(`CV chargé : ${cv.experiences.length} expériences et ${projects} sous-projets.`);
+}
+
+async function checkFrontend(config) {
+    const deployed = await (await request(config, '/deployment.json')).json();
+    assert.equal(deployed.commit, config.commit, 'Le frontend doit être publié avec le même commit que l’API.');
+    const html = await (await request(config, '/')).text();
+    assert.ok(/<app-root[\s>]/i.test(html) && /<base\s+href=["']\/["']/i.test(html),
+        'Le frontend Angular doit être compilé pour la racine Netlify.');
+    console.log('Frontend Angular publié avec le même commit que l’API.');
 }
 
 async function checkPdf(config) {
@@ -48,14 +59,15 @@ async function checkPdf(config) {
 async function runChecks(config) {
     assert.ok(config.api && config.commit && config.origin, 'Adresse API, commit et origine du site requis.');
     await waitForCommit(config);
+    await checkFrontend(config);
     await checkCv(config);
     await checkPdf(config);
 }
 
 if (require.main === module) {
     runChecks({ api: process.env.PUBLIC_API_URL, commit: process.env.GITHUB_SHA,
-        origin: process.env.PUBLIC_SITE_ORIGIN || 'https://hanachiyassine.github.io' })
+        origin: process.env.PUBLIC_SITE_ORIGIN || process.env.PUBLIC_API_URL })
         .catch(error => { console.error(`::error::${error.message}`); process.exitCode = 1; });
 }
 
-module.exports = { waitForCommit, checkCv, checkPdf, runChecks };
+module.exports = { waitForCommit, checkFrontend, checkCv, checkPdf, runChecks };

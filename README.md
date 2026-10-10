@@ -2,9 +2,10 @@
 
 Application personnelle destinée à présenter mon parcours, mes compétences et mes expériences aux recruteurs. Le CV web et le PDF utilisent les mêmes données professionnelles. Ce projet illustre la réalisation d’une interface Angular, d’une API Express, d’une administration authentifiée et d’un stockage relationnel.
 
-**État au 10 octobre 2026 : GitHub Pages est activé, mais le site reste indisponible. La création Render est bloquée par une demande de carte bancaire. Cette configuration prépare un backend Netlify Free sans carte, avec Turso ; les huit paramètres privés du backend sont configurés dans Netlify en production ; la publication conjointe backend/frontend reste à valider.**
+**État au 10 octobre 2026 : le déploiement cible est Netlify Free Legacy, sans carte bancaire. Angular, Express, l’administration et le PDF sont construits depuis le vrai dépôt `HanachiYassine/hanachi-yassine-cv` et publiés ensemble sur `soft-tartufo-259d9b`. La validation publique de cette configuration reste en cours.**
 
-Adresse cible, actuellement indisponible : `https://hanachiyassine.github.io/hanachi-yassine-cv/`. Le lien de consultation sera ajouté après vérification du premier déploiement réussi. L’administration sera accessible à l’adresse HTTPS effective du backend Netlify, suivie de `/admin/`.
+Adresse cible : `https://soft-tartufo-259d9b.netlify.app/`. L’administration utilise `/admin/` sur la même origine. Le dépôt `hanachi-yassine-cv-ebd5a`, créé depuis le modèle Angular Netlify, ne contient pas cette application CV.
+
 
 ## Fonctionnalités
 
@@ -27,10 +28,10 @@ Le backend de cette application est écrit en Node.js ; Java et Spring apparaiss
 | Authentification | bcrypt, jsonwebtoken ; `backend/auth.js` |
 | Persistance | SQLite embarqué ou Turso/libSQL distant, avec `@libsql/client` |
 | PDF | EJS et Puppeteer 25 ; `backend/template.ejs`, `backend/pdf.service.js` |
-| Déploiement | GitHub Pages pour Angular, Netlify Functions Free pour Express, Turso pour les données |
+| Déploiement | Netlify Free Legacy pour Angular et Express Functions, Turso pour les données |
 | Vérifications | Tests d’intégration avec `node:test`, test PDF réel et compilation Angular |
 
-Le navigateur consulte `/api/cv` et `/api/pdf`. En développement, le proxy Angular transmet ces requêtes au backend local. Sur GitHub Pages, la compilation reçoit l’adresse HTTPS du backend via `PUBLIC_API_URL`. Les identifiants Turso restent exclusivement dans le backend.
+Le navigateur consulte `/api/cv` et `/api/pdf`. En développement, le proxy Angular transmet ces requêtes au backend local. Sur Netlify, Angular et l’API utilisent la même origine ; la compilation reçoit cette adresse HTTPS via `PUBLIC_API_URL` ou la variable Netlify `URL`. Les identifiants Turso restent exclusivement dans le backend.
 
 Le nom interne `angular-quickstart` subsiste dans Angular CLI et dans le dossier `dist/angular-quickstart` ; il ne désigne pas le contenu de l’application.
 
@@ -123,7 +124,7 @@ Les tables du CV sont définies dans `backend/schema.sql` : informations, profil
 
 Les sous-projets conservent également leurs champs `equipe` et `role` dans la base, l’administration et les exports JSON. Pour un ancien schéma, une migration transactionnelle ajoute ces colonnes et complète les valeurs absentes à partir des sous-projets correspondants de `data.json`, sans remplacer les valeurs déjà renseignées. Elle garde une sauvegarde avant et après la mise à niveau ; elle ne se réexécute pas lorsque les colonnes existent. Le modèle visuel du CV et du PDF est conservé.
 
-Chaque modification validée s’effectue dans une transaction : le CV précédent et le CV enregistré sont conservés dans `cv_backups` avec la date et le motif. Une erreur annule toute l’écriture. Ces sauvegardes sont stockées dans la base sélectionnée, donc dans Turso en ligne ; elles restent disponibles après le redémarrage de Render.
+Chaque modification validée s’effectue dans une transaction : le CV précédent et le CV enregistré sont conservés dans `cv_backups` avec la date et le motif. Une erreur annule toute l’écriture. Ces sauvegardes sont stockées dans la base sélectionnée, donc dans Turso en ligne ; elles restent disponibles après le redéploiement de Netlify.
 
 L’administration permet de télécharger le CV courant sous forme de `data-<date>.json`, de télécharger une ancienne version ou de la restaurer. Les sauvegardes contiennent les données du CV et leurs identifiants, **aucun compte, hash de mot de passe ni jeton**. Une restauration conserve les comptes et sauvegarde d’abord le contenu remplacé.
 
@@ -191,77 +192,56 @@ node --test scripts/check-live-backend.test.cjs
 
 Ces six tests simulent un déploiement progressif et vérifient que la publication est bloquée si le commit reste ancien, si le CV est incomplet, si CORS empêche le navigateur d’accéder à l’API ou si le PDF est invalide ou en erreur. Ils ont été validés localement le 10 octobre 2026.
 
-`test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La construction du conteneur, les neuf tests backend, la génération réelle du PDF et la compilation Angular ont été validés le 10 octobre 2026 dans [GitHub Actions](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38021956315). Le déploiement public reste à vérifier après activation de Render et GitHub Pages.
+`test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La construction du conteneur, les neuf tests backend, la génération réelle du PDF et la compilation Angular ont été validés le 10 octobre 2026 dans [GitHub Actions](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38021956315). La publication publique doit aussi vérifier la fonction Netlify, le PDF et le frontend du même commit.
 
 Le script frontend historique `npm test` lance Karma et ses anciens tests de modèle. Il n’est pas utilisé comme validation du déploiement ; la compilation de production et les tests backend sont les contrôles du workflow. Cypress n’a pas de suite dédiée configurée dans ce projet.
 
-## Déploiement gratuit sans carte bancaire
+## Déploiement gratuit sur Netlify
 
-L’architecture conserve toutes les fonctionnalités : **GitHub Pages** pour Angular, **Netlify Functions Free** pour l’API Express, le PDF et l’administration, **Turso Free** pour la base existante. Render n’est plus nécessaire au workflow ; le Dockerfile reste utilisé pour les tests.
+Angular, Express, le PDF et l’administration sont publiés **ensemble dans un seul déploiement Netlify**, avec la base Turso existante. Render et GitHub Pages ne sont plus nécessaires à ce workflow. Le Dockerfile conserve les tests d’intégration Linux.
 
-Le compte existant est sur **Free Legacy à 0 $/mois**, sans carte enregistrée, vérifié dans son tableau de bord le 10 octobre 2026. Cette offre inclut 300 minutes de build, 100 Go de bande passante et, pour les fonctions de ce projet, 125 000 requêtes et 100 heures par mois. Les limites de l’offre Free sont fixes ; aucun moyen de paiement ni option payante n’a été ajouté. Les nouveaux comptes Free utilisent une autre offre de 300 crédits mensuels : elle ne décrit pas le compte actuel. Gratuit ne signifie pas disponibilité ou capacité illimitée. L’abonnement Turso reste à vérifier depuis le compte personnel.
+Le compte existant utilise **Free Legacy, à 0 $, sans carte bancaire** : 300 minutes de compilation, 100 Go de bande passante, 125 000 appels de fonctions et 100 heures de fonctions par mois. Les limites gratuites peuvent suspendre le service ; conserver cette offre sans changer d’abonnement. L’offre Turso du compte n’a pas été vérifiée indépendamment.
 
-### 1. Projet Netlify Free et Turso
+### Projet et compilation
 
-Réutiliser le projet Free existant et son intégration GitHub. Dans **Project configuration → Developer settings → Continuous deployment → Branches and deploy contexts**, définir la branche de production **`netlify-production`**, les branch deploys sur **None** et les Deploy Previews sur **None**. Le workflow avance cette branche uniquement après les tests de `main`, sans force push. Netlify compile le même commit ; `/health` doit ensuite annoncer son SHA exact avant publication Pages. La branche est réservée à ce workflow et ne doit pas recevoir de commits manuels.
+Relier **`soft-tartufo-259d9b` au vrai dépôt `HanachiYassine/hanachi-yassine-cv`**. Le dépôt généré `hanachi-yassine-cv-ebd5a` contient seulement le modèle Angular et n’est pas la source du CV.
 
-`netlify.toml` définit la bonne configuration backend : base `backend`, commande `npm run build:netlify`, publication `netlify/public`, fonctions `netlify/functions`, Node 22. La commande `ignore = "exit 1"` demande une construction pour chaque commit promu, y compris si seul Angular a changé, afin de conserver le contrôle du SHA.
+Dans **Project configuration → Developer settings → Branches and deploy contexts**, choisir **`netlify-production`** comme branche de production, **None** pour les branch deploys et les Deploy Previews. Seul le workflow de `main` avance cette branche après tous les tests, sans force push ; ne pas y ajouter de commits manuels.
 
-Dans **Project configuration → Environment variables**, renseigner les valeurs suivantes pour le contexte **Production**. Cocher **Contains secret values** et choisir **Specific deploy contexts → Production uniquement**, sans valeur dans les aperçus, branches, agents ou développement local. Sur Free, conserver les scopes de secrets proposés par Netlify (Builds, Functions, Runtime) ; une restriction plus fine nécessite une offre payante et n’est pas nécessaire ici :
+`netlify.toml` définit : base `backend`, commande `npm ci --include=dev --no-audit --no-fund && npm run build:netlify`, publication `netlify/public`, fonctions `netlify/functions`, Node 22. La réinstallation propre remplace les anciens modules natifs suivis dans Git, dont le binaire bcrypt incompatible. Le build installe les dépendances Angular et utilise Node 18.20.8 pour Angular 16, puis assemble Angular à la racine `/`, l’administration et la fonction Express dans le même déploiement. Node 22 reste le runtime de l’API et du PDF. `ignore = "exit 1"` reconstruit chaque commit pour conserver le même SHA frontend/backend.
 
-| Paramètre | Valeur ou règle |
+### Variables privées Netlify
+
+Dans **Project configuration → Environment variables**, définir dans le seul contexte **Production** :
+
+| Clé | Valeur |
 |---|---|
-| `TURSO_DATABASE_URL` | `libsql://cv-hanachiyassine.aws-eu-west-1.turso.io` |
-| `TURSO_AUTH_TOKEN` | Jeton sécurisé de la base existante, jamais dans Git |
-| `ADMIN_EMAIL` | E-mail du premier compte administrateur |
-| `ADMIN_PASSWORD` | Mot de passe sécurisé d’au moins 12 caractères |
-| `JWT_SECRET` | Clé sécurisée d’au moins 32 caractères, distincte du jeton Turso |
-| `CORS_ORIGINS` | `https://hanachiyassine.github.io` |
+| `NODE_ENV` | `production` |
+| `DATABASE_PROVIDER` | `turso` |
+| `TURSO_DATABASE_URL` | URL libSQL de la base existante |
+| `TURSO_AUTH_TOKEN` | Jeton Turso privé autorisant les opérations nécessaires |
+| `ADMIN_EMAIL` | Adresse de l’administrateur |
+| `ADMIN_PASSWORD` | Mot de passe initial privé d’au moins 12 caractères |
+| `JWT_SECRET` | Clé privée d’au moins 32 caractères |
+| `CORS_ORIGINS` | `https://soft-tartufo-259d9b.netlify.app` |
 
-L’adaptateur impose `NODE_ENV=production` et `DATABASE_PROVIDER=turso` en production : aucune base SQLite éphémère n’est utilisée dans les fonctions. Les données et sauvegardes restent dans Turso. Le premier démarrage crée un compte uniquement si la base ne contient aucun compte ; ces paramètres ne réinitialisent pas un compte existant. La connexion Turso et l’import des sept expériences et neuf sous-projets avaient été vérifiés le 10 octobre ; cela ne vérifie pas l’abonnement du compte.
+Les trois credentials `TURSO_AUTH_TOKEN`, `ADMIN_PASSWORD` et `JWT_SECRET` doivent être marqués **Contains secret values**. Les valeurs configurées ne doivent pas être exposées aux previews, branches, agents ou au développement local. Les anciens marqueurs de secret sur les paramètres publics sont irréversibles : `SECRETS_SCAN_OMIT_KEYS` exclut uniquement `ADMIN_EMAIL,CORS_ORIGINS,DATABASE_PROVIDER,NODE_ENV,TURSO_DATABASE_URL` pour éviter les faux positifs. Le scan reste actif pour les vrais secrets ; aucun credential n’est inclus dans Angular.
 
-Ne pas exposer les secrets aux Deploy Previews ou aux builds de pull requests. Ils restent des paramètres du backend et ne sont pas nécessaires à la compilation Angular. L’intégration GitHub existante suffit au déploiement Netlify ; aucun jeton personnel Netlify supplémentaire n’est nécessaire.
+Une base vide est initialisée une seule fois ; les données d’une base existante sont conservées. `ADMIN_PASSWORD` ne remplace pas le mot de passe d’un compte déjà enregistré.
 
-### 2. GitHub Actions et Pages
+### GitHub Actions
 
-Dans **Settings → Pages → Source**, choisir **GitHub Actions**. Cette source a été activée le 10 octobre 2026.
+Dans **Settings → Secrets and variables → Actions → Variables**, définir **`PUBLIC_API_URL=https://soft-tartufo-259d9b.netlify.app`**. Aucun jeton personnel Netlify ni `RENDER_DEPLOY_HOOK_URL` n’est utilisé. L’intégration GitHub existante lance Netlify ; le workflow utilise le `GITHUB_TOKEN` temporaire avec `contents: write` uniquement dans le job de publication.
 
-Dans **Settings → Secrets and variables → Actions**, configurer :
+À chaque commit de `main`, le workflow :
 
-| Type | Nom | Contenu |
-|---|---|---|
-| Variable | `PUBLIC_API_URL` | Origine HTTPS effective du projet Netlify, sans `/api` |
-| Variable facultative | `NETLIFY_SITE_ID` | Project ID du projet Netlify, conservé comme repère : `bb2fa144-01c3-456a-9d02-ad73a583e1fd` |
+1. Valide la configuration HTTPS, le backend Linux, les transactions, sauvegardes et le PDF.
+2. Teste le handler Netlify et le paquet final contenant la fonction, puis compile Angular.
+3. Avance `netlify-production` vers le même commit testé ; Netlify publie les fichiers Angular et Express ensemble.
+4. Attend `/health` avec le SHA exact, vérifie `/deployment.json` et Angular à la racine, les sept expériences et neuf sous-projets, CORS et un PDF binaire réel.
 
-Les secrets `RENDER_DEPLOY_HOOK_URL` et `NETLIFY_AUTH_TOKEN` ne sont pas utilisés. Le job `deploy-backend` utilise seulement le jeton temporaire GitHub Actions avec `contents: write` pour avancer `netlify-production` ; les autres jobs restent en lecture seule. Aucun identifiant Turso ou mot de passe d’administration n’est nécessaire dans GitHub Actions.
+Les pull requests exécutent les tests sans publication ni paramètres privés. Si Netlify échoue pour un commit déjà promu, corriger sa configuration puis utiliser **Deploys → Retry with latest branch commit**. Relancer ensuite le workflow complet si ses contrôles ont expiré. Le succès d’une compilation ne suffit pas à déclarer le site fonctionnel : vérifier réellement `/`, `/health`, `/api/cv`, `/api/pdf`, CORS et `/admin/` en production.
 
-Lancer une **exécution complète** du workflow **Vérification et déploiement du CV** sur `main`. Le pipeline :
-
-1. Vérifie les paramètres Actions et refuse une origine locale, une URL d’exemple ou une origine HTTPS invalide.
-2. Construit le conteneur, vérifie les transactions/sauvegardes et génère un vrai PDF.
-3. Teste le handler Lambda, puis le paquet réellement construit par Netlify : CV complet, CORS, administration protégée et transport binaire d’un vrai PDF Chromium.
-4. Compile Angular avec l’origine HTTPS effective de l’API.
-5. Avance `netlify-production` vers le commit validé ; l’intégration GitHub fait construire Netlify avec le SHA embarqué dans la fonction.
-6. Vérifie `/health` et son SHA exact, `/api/cv`, CORS pour Pages et `/api/pdf` avant de publier Angular sur Pages.
-
-Les déploiements sont ignorés sur les pull requests. En l’absence de configuration Actions, les tests restent indépendants et la publication est bloquée explicitement. Lancer uniquement le job précédemment échoué ne suffit pas : Angular doit être recompilé et son artefact Pages produit. Si le build Netlify échoue pour un commit déjà promu, corriger ses paramètres puis relancer ce build dans **Deploys → Trigger deploy**, avant de relancer le workflow complet.
-
-### 3. Adresses et limites à vérifier
-
-Sur l’origine Netlify effective, vérifier `/health`, `/api/cv`, `/api/pdf` et `/admin/`. Le frontend cible `https://hanachiyassine.github.io/hanachi-yassine-cv/` n’est considéré publié qu’après un workflow réussi et un contrôle HTTP réel.
-
-Le fichier `netlify.toml` ne publie que les fichiers d’administration et la fonction API ; les bases SQLite, sauvegardes et `.env` sont exclus de ces fichiers. Le SHA retourné par `/health` est généré à la compilation depuis `GITHUB_SHA` ou `COMMIT_REF`, et non depuis un paramètre modifiable à l’exécution.
-
-Les fonctions Netlify ont une limite d’exécution de 60 secondes, 1 Go de mémoire et une limite de réponse binaire d’environ 4,5 Mo. Le premier PDF de chaque nouvelle instance nécessite le téléchargement du navigateur et peut être plus lent. Un test local du handler ne remplace pas une vérification en production ; le pipeline bloque Pages si le PDF réel ne fonctionne pas.
-
-Pour reproduire les vérifications serverless sans accéder à Turso :
-
-```bash
-cd backend
-npm ci
-npm run test:netlify
-```
-
-Les tests utilisent une base SQLite temporaire et des identifiants aléatoires de test. Les modifications administratives de production restent visibles au prochain chargement du CV, sans reconstruction Angular.
+Le premier PDF d’une instance télécharge Chromium ; les suivants réutilisent `/tmp`. Les fonctions ont une limite d’exécution de 60 secondes, 1 Go de mémoire et environ 4,5 Mo de réponse binaire. Les vérifications locales et CI ne remplacent pas les contrôles publics.
 
 Documentation officielle : [offres Netlify Legacy](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-legacy-plans/legacy-pricing-plans/), [branche de production Netlify](https://docs.netlify.com/deploy/deploy-overview/), [Netlify Free sans carte](https://www.netlify.com/blog/introducing-netlify-free-plan/), [Netlify Free et limite de crédits des nouveaux comptes](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/), [Express sur Netlify](https://docs.netlify.com/build/frameworks/framework-setup-guides/express/), [limites des fonctions](https://docs.netlify.com/build/functions/configuration/), [Chromium serverless](https://github.com/Sparticuz/chromium), [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Turso JavaScript](https://docs.turso.tech/sdk/ts/reference).
