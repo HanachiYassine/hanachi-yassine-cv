@@ -2,9 +2,9 @@
 
 Application personnelle destinée à présenter mon parcours, mes compétences et mes expériences aux recruteurs. Le CV web et le PDF utilisent les mêmes données professionnelles. Ce projet illustre la réalisation d’une interface Angular, d’une API Express, d’une administration authentifiée et d’un stockage relationnel.
 
-**État au 10 octobre 2026 : le déploiement cible est Netlify Free Legacy, sans carte bancaire. Angular, Express, l’administration et le PDF sont construits depuis le vrai dépôt `HanachiYassine/hanachi-yassine-cv` et publiés ensemble sur `soft-tartufo-259d9b`. Le workflow vérifie le même commit frontend/backend, les données, CORS et la génération réelle du PDF.**
+**État au 10 octobre 2026 : le déploiement cible est Netlify Free Legacy, sans carte bancaire. Angular, Express, l’administration et le PDF sont construits depuis le vrai dépôt `HanachiYassine/hanachi-yassine-cv` et publiés ensemble sur `hanachiyassine`. Le workflow vérifie le même commit frontend/backend, les données, CORS et la génération réelle du PDF.**
 
-Adresse cible : `https://soft-tartufo-259d9b.netlify.app/`. L’administration utilise `/admin/` sur la même origine. Le dépôt `hanachi-yassine-cv-ebd5a`, créé depuis le modèle Angular Netlify, ne contient pas cette application CV.
+Adresse cible : `https://hanachiyassine.netlify.app/`. L’administration utilise `/admin/` sur la même origine. Le dépôt `hanachi-yassine-cv-ebd5a`, créé depuis le modèle Angular Netlify, ne contient pas cette application CV.
 
 
 ## Fonctionnalités
@@ -204,7 +204,7 @@ Le compte existant utilise **Free Legacy, à 0 $, sans carte bancaire** : 300 mi
 
 ### Projet et compilation
 
-Relier **`soft-tartufo-259d9b` au vrai dépôt `HanachiYassine/hanachi-yassine-cv`**. Le dépôt généré `hanachi-yassine-cv-ebd5a` contient seulement le modèle Angular et n’est pas la source du CV.
+Relier **`hanachiyassine` au vrai dépôt `HanachiYassine/hanachi-yassine-cv`**. Le dépôt généré `hanachi-yassine-cv-ebd5a` contient seulement le modèle Angular et n’est pas la source du CV.
 
 Dans **Project configuration → Developer settings → Branches and deploy contexts**, choisir **`netlify-production`** comme branche de production, **None** pour les branch deploys et les Deploy Previews. Seul le workflow de `main` avance cette branche après tous les tests, sans force push ; ne pas y ajouter de commits manuels.
 
@@ -223,7 +223,7 @@ Dans **Project configuration → Environment variables**, définir dans le seul 
 | `ADMIN_EMAIL` | Adresse de l’administrateur |
 | `ADMIN_PASSWORD` | Mot de passe initial privé d’au moins 12 caractères |
 | `JWT_SECRET` | Clé privée d’au moins 32 caractères |
-| `CORS_ORIGINS` | `https://soft-tartufo-259d9b.netlify.app` |
+| `CORS_ORIGINS` | `https://hanachiyassine.netlify.app` |
 
 Les trois credentials `TURSO_AUTH_TOKEN`, `ADMIN_PASSWORD` et `JWT_SECRET` doivent être marqués **Contains secret values**. Les valeurs configurées ne doivent pas être exposées aux previews, branches, agents ou au développement local. Les anciens marqueurs de secret sur les paramètres publics sont irréversibles : `SECRETS_SCAN_OMIT_KEYS` exclut uniquement `ADMIN_EMAIL,CORS_ORIGINS,DATABASE_PROVIDER,NODE_ENV,TURSO_DATABASE_URL` pour éviter les faux positifs. Le scan reste actif pour les vrais secrets ; aucun credential n’est inclus dans Angular.
 
@@ -231,7 +231,7 @@ Une base vide est initialisée une seule fois ; les données d’une base exista
 
 ### GitHub Actions
 
-L’origine publique **`PUBLIC_API_URL=https://soft-tartufo-259d9b.netlify.app`** est définie une seule fois dans l’environnement du workflow versionné. Les anciennes variables Actions de ce nom ne sont plus utilisées. Aucun jeton personnel Netlify ni `RENDER_DEPLOY_HOOK_URL` n’est utilisé. L’intégration GitHub existante lance Netlify ; le workflow utilise le `GITHUB_TOKEN` temporaire avec `contents: write` uniquement dans le job de publication. Ce job récupère l’historique Git complet (`fetch-depth: 0`) pour vérifier le fast-forward de la branche distante.
+L’origine publique **`PUBLIC_API_URL=https://hanachiyassine.netlify.app`** est définie une seule fois dans l’environnement du workflow versionné. Les anciennes variables Actions de ce nom ne sont plus utilisées. Aucun jeton personnel Netlify ni `RENDER_DEPLOY_HOOK_URL` n’est utilisé. L’intégration GitHub existante lance Netlify ; le workflow utilise le `GITHUB_TOKEN` temporaire avec `contents: write` uniquement dans le job de publication. Ce job récupère l’historique Git complet (`fetch-depth: 0`) pour vérifier le fast-forward de la branche distante.
 
 À chaque commit de `main`, le workflow :
 
@@ -254,13 +254,13 @@ Le lien reçu ouvre `/admin/reset-password.html`. Son jeton aléatoire est plac�
 
 ### Configuration privée dans Netlify
 
-Projet `soft-tartufo-259d9b` → **Project configuration → Environment variables**. Définir ces valeurs pour le contexte **Production** et la portée **Functions**, puis redéployer :
+Projet `hanachiyassine` → **Project configuration → Environment variables**. Définir ces valeurs pour le contexte **Production** et la portée **Functions**, puis redéployer :
 
 | Variable | Valeur / rôle |
 | --- | --- |
 | `RESEND_API_KEY` | Clé API Resend avec permission **Sending access**, marquée comme secret ; ne jamais la publier dans GitHub ou dans une conversation. |
 | `ADMIN_EMAIL` | Adresse du compte administrateur existant dans Turso. La variable actuelle peut être conservée si elle correspond déjà au compte. |
-| `ADMIN_APP_URL` | `https://soft-tartufo-259d9b.netlify.app` ; paramètre public pour construire les liens HTTPS sans utiliser le Host de la requête. |
+| `ADMIN_APP_URL` | `https://hanachiyassine.netlify.app` ; paramètre public pour construire les liens HTTPS sans utiliser le Host de la requête. |
 | `RESET_EMAIL_FROM` | `CV Admin <onboarding@resend.dev>` pour envoyer uniquement à l’adresse du propriétaire du compte Resend, ou une adresse d’un domaine Resend vérifié. |
 
 Resend propose un plan Free sans carte bancaire, limité à 3 000 e-mails par mois et 100 par jour : [tarifs](https://resend.com/pricing), [offre transactionnelle](https://resend.com/products/transactional-emails). Choisir Free et ne pas activer d’offre payante. Créer le compte Resend avec la même adresse que `ADMIN_EMAIL` et vérifier cette adresse. Dans **API Keys**, créer une clé limitée à l’envoi. Sans domaine personnel, `onboarding@resend.dev` est une possibilité de test réservée à l’adresse du propriétaire du compte ; elle ne permet pas d’envoyer à d’autres personnes. Pour étendre les destinataires, un domaine dont vous contrôlez le DNS doit être vérifié : [restriction officielle](https://resend.com/docs/api-reference/errors#validation_error).

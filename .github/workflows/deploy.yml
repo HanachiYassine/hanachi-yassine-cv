@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 env:
-  PUBLIC_API_URL: https://soft-tartufo-259d9b.netlify.app
+  PUBLIC_API_URL: https://hanachiyassine.netlify.app
 concurrency:
   group: cv-${{ github.ref }}
   cancel-in-progress: false
