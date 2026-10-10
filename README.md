@@ -240,7 +240,11 @@ Le workflow vérifie la configuration de publication, construit et teste le cont
 
 Le paramètre `autoDeployTrigger: 'off'` évite un déploiement Render avant les contrôles GitHub Actions. Les jetons Turso et mots de passe ne sont jamais intégrés à la compilation Angular.
 
-Ces offres gratuites ont des quotas. Render met le service en veille après une période d’inactivité : la première consultation peut attendre son réveil. Les données restent dans Turso. Un nom de domaine personnalisé acheté séparément n’est pas nécessaire.
+La configuration vise uniquement les offres gratuites : espace Render **Hobby**, service **Free** (`plan: free`), base Turso **Free** et GitHub Pages pour ce dépôt public. Aucun abonnement payant, disque persistant Render ou nom de domaine acheté n’est nécessaire. Vérifier les offres effectives des comptes avant la première création ; la connexion à la base Turso ne permet pas à elle seule de vérifier son abonnement.
+
+Pour conserver la contrainte « aucun coût », ne pas ajouter de moyen de paiement à Render ni activer d’option payante. Si la création du service impose un paiement, arrêter cette procédure. Render peut facturer les dépassements de quotas lorsqu’un moyen de paiement est enregistré ; sans moyen de paiement, les services ou nouvelles compilations sont suspendus lorsque les quotas concernés sont épuisés. Voir les [conditions officielles de l’offre gratuite](https://render.com/docs/free).
+
+Ces offres gratuites ont des quotas. Render met le service en veille après une période d’inactivité : la première consultation peut attendre son réveil. Les données restent dans Turso.
 
 Documentation officielle : [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Render gratuit](https://render.com/docs/free), [déclenchement Render](https://render.com/docs/deploy-hooks), [Turso JavaScript](https://docs.turso.tech/sdk/ts/reference), [Puppeteer](https://pptr.dev/troubleshooting).
 
