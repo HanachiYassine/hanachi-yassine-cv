@@ -10,7 +10,7 @@
     "restore": "node scripts/restore.js",
     "test:pdf": "node --test test/pdf.smoke.js",
     "build:netlify": "node netlify/build.cjs",
-    "test:netlify": "node --test test/netlify.smoke.js",
+    "test:netlify": "node --no-experimental-require-module --test test/netlify.smoke.js",
     "test:bundle": "node netlify/check-bundle.cjs"
   },
   "dependencies": {

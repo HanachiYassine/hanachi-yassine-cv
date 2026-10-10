@@ -2,7 +2,7 @@
 
 Application personnelle destinée à présenter mon parcours, mes compétences et mes expériences aux recruteurs. Le CV web et le PDF utilisent les mêmes données professionnelles. Ce projet illustre la réalisation d’une interface Angular, d’une API Express, d’une administration authentifiée et d’un stockage relationnel.
 
-**État au 10 octobre 2026 : le déploiement cible est Netlify Free Legacy, sans carte bancaire. Angular, Express, l’administration et le PDF sont construits depuis le vrai dépôt `HanachiYassine/hanachi-yassine-cv` et publiés ensemble sur `soft-tartufo-259d9b`. La validation publique de cette configuration reste en cours.**
+**État au 10 octobre 2026 : le déploiement cible est Netlify Free Legacy, sans carte bancaire. Angular, Express, l’administration et le PDF sont construits depuis le vrai dépôt `HanachiYassine/hanachi-yassine-cv` et publiés ensemble sur `soft-tartufo-259d9b`. Le workflow vérifie le même commit frontend/backend, les données, CORS et la génération réelle du PDF.**
 
 Adresse cible : `https://soft-tartufo-259d9b.netlify.app/`. L’administration utilise `/admin/` sur la même origine. Le dépôt `hanachi-yassine-cv-ebd5a`, créé depuis le modèle Angular Netlify, ne contient pas cette application CV.
 
@@ -208,7 +208,7 @@ Relier **`soft-tartufo-259d9b` au vrai dépôt `HanachiYassine/hanachi-yassine-c
 
 Dans **Project configuration → Developer settings → Branches and deploy contexts**, choisir **`netlify-production`** comme branche de production, **None** pour les branch deploys et les Deploy Previews. Seul le workflow de `main` avance cette branche après tous les tests, sans force push ; ne pas y ajouter de commits manuels.
 
-`netlify.toml` définit : base `backend`, commande `npm ci --include=dev --no-audit --no-fund && npm run build:netlify`, publication `netlify/public`, fonctions `netlify/functions`, Node 22. La réinstallation propre remplace les anciens modules natifs suivis dans Git, dont le binaire bcrypt incompatible. Le build installe les dépendances Angular et utilise Node 18.20.8 pour Angular 16, puis assemble Angular à la racine `/`, l’administration et la fonction Express dans le même déploiement. Node 22 reste le runtime de l’API et du PDF. `ignore = "exit 1"` reconstruit chaque commit pour conserver le même SHA frontend/backend.
+`netlify.toml` définit : base `backend`, commande `npm ci --include=dev --no-audit --no-fund && npm run build:netlify`, publication `netlify/public`, fonctions `netlify/functions`, Node 22. La réinstallation propre remplace les anciens modules natifs suivis dans Git, dont le binaire bcrypt incompatible. Le build installe les dépendances Angular et utilise Node 18.20.8 pour Angular 16, puis assemble Angular à la racine `/`, l’administration et la fonction Express dans le même déploiement. Node 22 reste le runtime de l’API et du PDF. Les modules ESM de Chromium et Puppeteer sont chargés par `import()` ; les tests du handler et du bundle désactivent `require(ESM)`, comme le runtime Lambda de Netlify. `ignore = "exit 1"` reconstruit chaque commit pour conserver le même SHA frontend/backend.
 
 ### Variables privées Netlify
 
