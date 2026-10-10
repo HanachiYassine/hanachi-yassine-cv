@@ -2,7 +2,7 @@
 
 Application personnelle destinée à présenter mon parcours, mes compétences et mes expériences aux recruteurs. Le CV web et le PDF utilisent les mêmes données professionnelles. Ce projet illustre la réalisation d’une interface Angular, d’une API Express, d’une administration authentifiée et d’un stockage relationnel.
 
-**Site non déployé au 10 octobre 2026 : GitHub Pages n’est pas activé et l’adresse de l’API n’est pas configurée. Les comptes Turso / Render restent à connecter pour terminer la publication.**
+**État au 10 octobre 2026 : base Turso connectée, CV importé et vérifié. Le backend Render reste à créer, son adresse HTTPS à configurer et GitHub Pages à activer. Le site public n’est pas encore déployé.**
 
 Adresse cible, actuellement indisponible : `https://hanachiyassine.github.io/hanachi-yassine-cv/`. Le lien de consultation sera ajouté après vérification du premier déploiement réussi. L’administration sera accessible à l’adresse HTTPS effective du backend Render, suivie de `/admin/`.
 
@@ -121,6 +121,8 @@ Si le port du backend change, ajuster `proxy.conf.json`. Les composants Angular 
 
 Les tables du CV sont définies dans `backend/schema.sql` : informations, profil, compétences, expériences, missions, technologies, sous-projets, formations, langues, certifications et centres d’intérêt. Les tableaux du CV sont assemblés dans `cv.service.js` à partir de lectures groupées et cohérentes. Les expériences et formations suivent leur ordre enregistré.
 
+Les sous-projets conservent également leurs champs `equipe` et `role` dans la base, l’administration et les exports JSON. Pour un ancien schéma, une migration transactionnelle ajoute ces colonnes et complète les valeurs absentes à partir des sous-projets correspondants de `data.json`, sans remplacer les valeurs déjà renseignées. Elle garde une sauvegarde avant et après la mise à niveau ; elle ne se réexécute pas lorsque les colonnes existent. Le modèle visuel du CV et du PDF est conservé.
+
 Chaque modification validée s’effectue dans une transaction : le CV précédent et le CV enregistré sont conservés dans `cv_backups` avec la date et le motif. Une erreur annule toute l’écriture. Ces sauvegardes sont stockées dans la base sélectionnée, donc dans Turso en ligne ; elles restent disponibles après le redémarrage de Render.
 
 L’administration permet de télécharger le CV courant sous forme de `data-<date>.json`, de télécharger une ancienne version ou de la restaurer. Les sauvegardes contiennent les données du CV et leurs identifiants, **aucun compte, hash de mot de passe ni jeton**. Une restauration conserve les comptes et sauvegarde d’abord le contenu remplacé.
@@ -179,9 +181,9 @@ npm test
 npm run test:pdf
 ```
 
-Les tests d’intégration utilisent des bases temporaires : données initiales, authentification, modification du CV, sous-projets, sauvegardes sans comptes, restauration, rollback et conservation des données au redémarrage. Le scénario d’initialisation Turso est testé avec le moteur SQL local ; une vérification distante exige le compte Turso configuré.
+Les neuf tests d’intégration utilisent des bases temporaires : données initiales, authentification, modification du CV, sous-projets avec équipes et rôles, sauvegardes sans comptes, restauration, rollback, mise à niveau d’un ancien schéma et conservation des données au redémarrage. Ils ont été validés localement le 10 octobre 2026. La connexion réelle à Turso, l’import des sept expériences et neuf sous-projets, leur cohérence avec `data.json`, les relations SQL et deux sauvegardes ont également été vérifiés à cette date.
 
-`test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La construction du conteneur, les 7 tests backend, la génération réelle du PDF et la compilation Angular ont été validés le 10 octobre 2026 dans [GitHub Actions](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38015881232). Le déploiement public et la connexion distante à Turso restent à vérifier après activation des comptes.
+`test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La construction du conteneur, les sept tests backend alors présents, la génération réelle du PDF et la compilation Angular ont été validés le 10 octobre 2026 dans [GitHub Actions](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38015881232). Le déploiement public reste à vérifier après activation de Render et GitHub Pages.
 
 Le script frontend historique `npm test` lance Karma et ses anciens tests de modèle. Il n’est pas utilisé comme validation du déploiement ; la compilation de production et les tests backend sont les contrôles du workflow. Cypress n’a pas de suite dédiée configurée dans ce projet.
 
@@ -199,9 +201,11 @@ GitHub Pages héberge uniquement le frontend Angular. L’API Express, la géné
 
 ### 1. Turso
 
-L’URL de base fournie pour ce projet est `libsql://cv-hanachiyassine.aws-eu-west-1.turso.io`. Elle est préremplie dans `render.yaml` et `backend/.env.example`. La connexion distante reste à vérifier avec un jeton d’accès en écriture ; l’URL seule ne permet pas de lire ou modifier la base.
+La base du projet est `libsql://cv-hanachiyassine.aws-eu-west-1.turso.io`. Son URL est préremplie dans `render.yaml` et `backend/.env.example`. La connexion et l’import du CV ont été vérifiés le 10 octobre 2026. La base contient les sept expériences, neuf sous-projets et deux sauvegardes de mise à niveau ; le CV courant correspond aux données professionnelles de `data.json`. L’URL seule ne permet pas de lire ou modifier la base.
 
 Enregistrer ce jeton dans le paramètre sécurisé `TURSO_AUTH_TOKEN` de Render ou dans le fichier local `backend/.env`, jamais dans le dépôt. Le backend crée les tables et importe le CV initial lorsque la base est vide. Les comptes administrateurs et sauvegardes sont ensuite conservés dans cette base.
+
+Le compte administrateur n’est pas encore créé dans cette base. Il sera initialisé au premier démarrage du backend avec les paramètres `ADMIN_EMAIL` et `ADMIN_PASSWORD` renseignés dans Render.
 
 ### 2. Backend Render
 

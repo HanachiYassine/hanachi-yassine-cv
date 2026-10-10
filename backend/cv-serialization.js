@@ -3,6 +3,7 @@ const tables = ['infos', 'profil', 'competences', 'experiences', 'experience_mis
     'experience_projet_technos', 'formations', 'langues', 'certificats', 'centres_interet'];
 const infoKeys = ['nom', 'titre', 'adresse', 'tel', 'email', 'preavis', 'linkedin', 'age', 'nationalite', 'statut'];
 const expKeys = ['poste', 'entreprise', 'localisation', 'periode', 'projet', 'client', 'equipe', 'role'];
+const projectKeys = ['titre', 'contexte', 'equipe', 'role'];
 
 function insert(table, values) {
     const columns = Object.keys(values);
@@ -19,7 +20,7 @@ function leafStatements(table, foreignKey, id, key, values = []) {
 }
 
 function projectStatements(project, experienceId, id) {
-    return [insert('experience_projets', { id, experience_id: experienceId, ...pick(project, ['titre', 'contexte']) }),
+    return [insert('experience_projets', { id, experience_id: experienceId, ...pick(project, projectKeys) }),
         ...leafStatements('experience_projet_missions', 'projet_id', id, 'mission', project.missions),
         ...leafStatements('experience_projet_technos', 'projet_id', id, 'techno', project.technologies)];
 }
@@ -55,4 +56,4 @@ function cvStatements(data) {
 const clearStatements = [...tables].reverse().map(table => ({ sql: `DELETE FROM ${table}`, args: [] }));
 const readStatements = tables.map(table => ({ sql: `SELECT * FROM ${table} ORDER BY ${['experiences', 'formations'].includes(table) ? 'ordre, id' : 'id'}`, args: [] }));
 
-module.exports = { tables, infoKeys, expKeys, insert, cvStatements, clearStatements, readStatements };
+module.exports = { tables, infoKeys, expKeys, projectKeys, insert, cvStatements, clearStatements, readStatements };

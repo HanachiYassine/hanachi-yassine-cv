@@ -41,6 +41,7 @@ async function initialize(client, provider) {
         const migration = path.join(__dirname, 'migrations/20261010-align-cv-aptineo.sql');
         await client.executeMultiple(fs.readFileSync(migration, 'utf8'));
     }
+    await require('./project-details-migration').migrateProjectDetails(client);
     await seedCv(client);
     await seedAdmin(client);
     await seedBackup(client);

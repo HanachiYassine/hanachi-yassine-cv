@@ -162,7 +162,7 @@ function openExperience(exp = {}) {
 }
 
 function addProject(project = {}) {
-    addRow($('projectList'), { titre: 'Titre du sous-projet', contexte: 'Contexte' }, project, true);
+    addRow($('projectList'), { titre: 'Titre du sous-projet', contexte: 'Contexte', equipe: 'Équipe', role: 'Rôle' }, project, true);
 }
 
 async function saveExperience(event) {

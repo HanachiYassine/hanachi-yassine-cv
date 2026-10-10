@@ -1,4 +1,4 @@
-const { infoKeys, expKeys } = require('./cv-serialization');
+const { infoKeys, expKeys, projectKeys } = require('./cv-serialization');
 const categories = Object.keys(require('./data.json').competences);
 
 function fail(message) {
@@ -33,7 +33,7 @@ function record(value, keys, required = []) {
 }
 
 function project(value) {
-    return { ...record(value, ['titre', 'contexte'], ['titre']),
+    return { ...record(value, projectKeys, ['titre']),
         missions: strings(value.missions, 'missions'), technologies: strings(value.technologies, 'technologies') };
 }
 

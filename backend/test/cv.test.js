@@ -41,6 +41,8 @@ test('initialisation complète depuis data.json et accès public', async () => {
     assert.equal(original.experiences.length, 7);
     assert.equal(original.experiences.flatMap(exp => exp.projets || []).length, 9);
     assert.deepEqual(original.experiences.map(exp => exp.missions), source.experiences.map(exp => exp.missions || []));
+    assert.deepEqual(original.experiences.flatMap(exp => (exp.projets || []).map(p => [p.equipe, p.role])),
+        source.experiences.flatMap(exp => (exp.projets || []).map(p => [p.equipe || '', p.role || ''])));
     assert.equal((await request('/health')).status, 200);
 });
 
@@ -72,13 +74,17 @@ test('modification du CV, sauvegarde JSON et comptes préservés', async () => {
 
 test('expérience avec sous-projet : création, modification et suppression', async () => {
     const exp = { poste: 'Poste test', entreprise: 'Société test', periode: '2026', missions: ['Mission'],
-        technologies: ['Java'], projets: [{ titre: 'Projet test', missions: ['Sous-mission'], technologies: ['Angular'] }] };
+        technologies: ['Java'], projets: [{ titre: 'Projet test', equipe: 'Équipe test', role: 'Développeur test',
+            missions: ['Sous-mission'], technologies: ['Angular'] }] };
     const created = await request('/api/admin/experiences', 'POST', exp);
     assert.equal(created.status, 201);
     const id = (await created.json()).id;
     const current = await (await request(`/api/admin/experiences/${id}`)).json();
     assert.deepEqual(current.projets[0].missions, ['Sous-mission']);
+    assert.equal(current.projets[0].equipe, 'Équipe test');
+    assert.equal(current.projets[0].role, 'Développeur test');
     assert.equal((await request(`/api/admin/experiences/${id}`, 'PUT', { ...current, poste: 'Poste modifié' })).status, 200);
+    assert.equal((await (await request(`/api/admin/experiences/${id}`)).json()).projets[0].role, 'Développeur test');
     assert.equal((await (await request(`/api/admin/experiences/${id}`)).json()).projets[0].id, current.projets[0].id);
     assert.equal((await request(`/api/admin/experiences/${id}`, 'DELETE')).status, 200);
     assert.equal((await request(`/api/admin/experiences/${id}`)).status, 404);

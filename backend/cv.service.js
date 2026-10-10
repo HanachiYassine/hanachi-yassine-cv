@@ -1,11 +1,11 @@
-const { tables, readStatements } = require('./cv-serialization');
+const { tables, readStatements, projectKeys } = require('./cv-serialization');
 
 function values(rows, key, id, value) {
     return rows.filter(row => row[key] === id).map(row => row[value]);
 }
 
 function projectData(project, data) {
-    return { id: project.id, titre: project.titre, contexte: project.contexte,
+    return { id: project.id, ...Object.fromEntries(projectKeys.map(key => [key, project[key] ?? ''])),
         missions: values(data.experience_projet_missions, 'projet_id', project.id, 'mission'),
         technologies: values(data.experience_projet_technos, 'projet_id', project.id, 'techno') };
 }

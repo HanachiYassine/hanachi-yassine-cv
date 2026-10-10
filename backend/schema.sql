@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS infos (
         experience_id INTEGER NOT NULL,
         titre TEXT NOT NULL,
         contexte TEXT,
+        equipe TEXT,
+        role TEXT,
         FOREIGN KEY (experience_id) REFERENCES experiences(id) ON DELETE CASCADE
     );
 
