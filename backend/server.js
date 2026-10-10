@@ -1,8 +1,5 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
 const cors = require('cors');
-const ejs = require('ejs');
-const fs = require('fs');
 const path = require('path');
 
 const cvService = require('./cv.service');
@@ -10,10 +7,15 @@ const auth = require('./auth');
 const adminExperiencesRoutes = require('./admin-experiences.routes');
 
 const app = express();
-const PORT = 3000;
+const db = require('./db');
+const PORT = Number(process.env.PORT || 3000);
+if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
+const origins = (process.env.CORS_ORIGINS || 'http://localhost:4200').split(',').map(value => value.trim());
 
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
+app.use(cors({ origin(origin, callback) {
+    callback(null, !origin || origins.includes(origin));
+} }));
+app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API to serve CV data from DB
@@ -32,65 +34,26 @@ app.use('/api/admin', auth.router);
 
 // Admin Experience Routes
 app.use('/api/admin/experiences', adminExperiencesRoutes);
+app.use('/api/admin', require('./admin-cv.routes'));
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// API to generate PDF using EJS template
-app.get('/api/pdf', async (req, res) => {
-    try {
-        console.log('Generating PDF from backend template...');
-        const cvData = await cvService.getCvData();
+// PDF généré depuis le même CV que l’API publique.
+app.get('/api/pdf', require('./http-utils').route(async (req, res) => {
+    const pdf = await require('./pdf.service').generatePdf();
+    res.set('Cache-Control', 'no-store').contentType('application/pdf').send(pdf);
+}));
 
-        // Read profile image and convert to base64
-        const imagePath = path.join(__dirname, '../src/assets/cv-profile.jpeg');
-        let photoBase64 = '';
-        try {
-            if (fs.existsSync(imagePath)) {
-                const imageBuffer = fs.readFileSync(imagePath);
-                photoBase64 = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
-            } else {
-                console.warn('Profile image not found at:', imagePath);
-            }
-        } catch (err) {
-            console.warn('Error reading profile image:', err.message);
-        }
-
-        const templatePath = path.join(__dirname, 'template.ejs');
-        const template = fs.readFileSync(templatePath, 'utf8');
-
-        // Render HTML with data
-        const html = ejs.render(template, { ...cvData, photoBase64 });
-
-        const browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
-        const page = await browser.newPage();
-
-        // Set the content
-        await page.setContent(html, { waitUntil: 'networkidle0' });
-
-        const pdf = await page.pdf({
-            format: 'A4',
-            printBackground: true,
-            margin: {
-                top: '0px',
-                right: '0px',
-                bottom: '0px',
-                left: '0px'
-            }
-        });
-
-        await browser.close();
-
-        res.contentType('application/pdf');
-        res.send(pdf);
-        console.log('PDF generated successfully.');
-
-    } catch (error) {
-        console.error('PDF Generation Error:', error);
-        res.status(500).send('Error generating PDF');
-    }
+app.use((error, req, res, next) => {
+    console.error('Request failed:', error.code || error.status || 'internal');
+    res.status(error.status || 500).json({ message: error.status ? error.message : 'Erreur interne du serveur.' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Backend server running on http://localhost:${PORT}`);
+if (require.main === module) db.ready.then(() => app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Backend server listening on port ${PORT}`);
+})).catch(error => {
+    console.error('Database initialization failed:', error.message);
+    db.close();
+    process.exitCode = 1;
 });
+
+module.exports = app;

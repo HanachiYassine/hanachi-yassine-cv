@@ -1,29 +1,7 @@
 const db = require('./db');
-
-const { profil: nouveauProfil } = require('./data.json');
-
-db.serialize(() => {
-    db.run('UPDATE profil SET contenu = ? WHERE id = 1', [nouveauProfil], function (err) {
-        if (err) {
-            console.error('Error updating profile:', err);
-            db.close();
-            process.exit(1);
-        }
-
-        if (this.changes === 0) {
-            console.log('No existing profile found. Inserting new one...');
-            db.run('INSERT INTO profil (id, contenu) VALUES (1, ?)', [nouveauProfil], function (err) {
-                if (err) {
-                    console.error('Error inserting profile:', err);
-                    db.close();
-                    process.exit(1);
-                }
-                console.log('Profile inserted successfully.');
-                db.close();
-            });
-        } else {
-            console.log('Profil updated successfully');
-            db.close();
-        }
-    });
-});
+const { editCv } = require('./cv-store');
+const { profil } = require('./data.json');
+editCv('mise à jour du profil depuis data.json', current => ({ ...current, profil }))
+    .then(() => console.log('Profil mis à jour et sauvegardé.'))
+    .catch(error => { console.error(error.message); process.exitCode = 1; })
+    .finally(() => db.close());

@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 type StrArr = ReadonlyArray<string>;
 
@@ -49,7 +50,7 @@ export class CvComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    this.http.get<any>('http://localhost:3000/api/cv').subscribe(data => {
+    this.http.get<any>(`${environment.apiBaseUrl}/api/cv`).subscribe(data => {
       this.infos = data.infos;
       this.profil = data.profil;
       this.competences = data.competences;
@@ -71,7 +72,7 @@ export class CvComponent implements OnInit {
     if (btn) btn.style.display = 'none';
 
     // Call GET /api/pdf directly
-    this.http.get('http://localhost:3000/api/pdf', { responseType: 'blob' })
+    this.http.get(`${environment.apiBaseUrl}/api/pdf`, { responseType: 'blob' })
       .subscribe({
         next: (blob: Blob) => {
           const url = window.URL.createObjectURL(blob);

@@ -43,3 +43,12 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# Configuration et données locales
+.env
+.env.*
+!.env.example
+/backend/backups/
+/backend/*.db-*
+/backend/*.db-journal
+/backend/cv.local.db

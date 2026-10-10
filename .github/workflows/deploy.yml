@@ -1,0 +1,72 @@
+name: Vérification et déploiement du CV
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cv-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Construire le conteneur du backend
+        run: docker build --tag cv-backend .
+      - name: Vérifier API, transactions et sauvegardes dans le conteneur
+        run: docker run --rm --env NODE_ENV=test cv-backend npm test
+      - name: Vérifier la génération réelle du PDF dans le conteneur
+        run: docker run --rm --env NODE_ENV=test cv-backend npm run test:pdf
+  frontend:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL || 'https://example.invalid' }}
+      CYPRESS_INSTALL_BINARY: '0'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: node scripts/configure-frontend.cjs
+      - run: npm run build -- --configuration production --base-href /hanachi-yassine-cv/
+      - uses: actions/upload-pages-artifact@v4
+        if: github.ref == 'refs/heads/main' && vars.PUBLIC_API_URL != ''
+        with:
+          path: dist/angular-quickstart
+  deploy-backend:
+    if: github.ref == 'refs/heads/main' && vars.PUBLIC_API_URL != ''
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    env:
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+    steps:
+      - name: Déclencher le déploiement Render du commit vérifié
+        shell: bash
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "Configurer le secret RENDER_DEPLOY_HOOK_URL."
+            exit 1
+          fi
+          curl --fail --silent --show-error --output /dev/null \
+            --get --data-urlencode "ref=${GITHUB_SHA}" "$RENDER_DEPLOY_HOOK_URL"
+  deploy-pages:
+    if: github.ref == 'refs/heads/main' && vars.PUBLIC_API_URL != ''
+    needs: [backend, frontend, deploy-backend]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publier le CV
+        id: deployment
+        uses: actions/deploy-pages@v4

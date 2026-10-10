@@ -1,21 +1,14 @@
 const db = require('./db');
-
-db.serialize(() => {
-    // Update experience_technos
-    db.run("UPDATE experience_technos SET techno = 'TypeScript' WHERE techno = 'TS'", function (err) {
-        if (err) {
-            console.error('Error updating experience_technos:', err);
-        } else {
-            console.log(`Updated ${this.changes} rows in experience_technos`);
+const { editCv } = require('./cv-store');
+function update(current) {
+    for (const exp of current.experiences) {
+        for (const row of [exp, ...(exp.projets || [])]) {
+            row.technologies = (row.technologies || []).map(value => value === 'TS' ? 'TypeScript' : value);
         }
-    });
-
-    // Update experience_projet_technos
-    db.run("UPDATE experience_projet_technos SET techno = 'TypeScript' WHERE techno = 'TS'", function (err) {
-        if (err) {
-            console.error('Error updating experience_projet_technos:', err);
-        } else {
-            console.log(`Updated ${this.changes} rows in experience_projet_technos`);
-        }
-    });
-});
+    }
+    return current;
+}
+editCv('normalisation TypeScript', update)
+    .then(() => console.log('Technologies mises à jour et sauvegardées.'))
+    .catch(error => { console.error(error.message); process.exitCode = 1; })
+    .finally(() => db.close());

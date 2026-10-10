@@ -1,134 +1,53 @@
-const sqlite3 = require('sqlite3').verbose();
-const fs = require('fs');
+require('dotenv').config({ quiet: true });
 const path = require('path');
+const { createClient } = require('@libsql/client');
+const { initialize } = require('./initialize-db');
 
-const dbPath = path.join(__dirname, 'cv.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Could not connect to database', err);
-    } else {
-        console.log('Connected to SQLite database');
-    }
-});
+function connectionOptions() {
+    const provider = process.env.DATABASE_PROVIDER || 'sqlite';
+    if (provider === 'sqlite') return { url: `file:${path.resolve(__dirname, process.env.SQLITE_PATH || 'cv.db')}` };
+    if (provider !== 'turso') throw new Error('DATABASE_PROVIDER doit être sqlite ou turso.');
+    const url = process.env.TURSO_DATABASE_URL;
+    const authToken = process.env.TURSO_AUTH_TOKEN;
+    if (!url || !authToken) throw new Error('TURSO_DATABASE_URL et TURSO_AUTH_TOKEN sont requis.');
+    if (!/^(libsql|https):\/\//.test(url)) throw new Error('Turso nécessite une URL libsql:// ou https://.');
+    return { url, authToken };
+}
 
-// Enable foreign keys
-db.run('PRAGMA foreign_keys = ON');
+const client = createClient(connectionOptions());
+const ready = initialize(client, process.env.DATABASE_PROVIDER || 'sqlite');
+ready.catch(() => {});
 
-const schema = `
-    CREATE TABLE IF NOT EXISTS infos (
-        id INTEGER PRIMARY KEY CHECK (id = 1),
-        nom TEXT,
-        titre TEXT,
-        adresse TEXT,
-        tel TEXT,
-        email TEXT,
-        preavis TEXT,
-        linkedin TEXT,
-        age TEXT,
-        nationalite TEXT,
-        statut TEXT
-    );
+async function batch(statements, mode = 'read') {
+    await ready;
+    return client.batch(statements, mode);
+}
 
-    CREATE TABLE IF NOT EXISTS profil (
-        id INTEGER PRIMARY KEY CHECK (id = 1),
-        contenu TEXT
-    );
+async function all(sql, args = []) {
+    const [result] = await batch([{ sql, args }]);
+    return result.rows.map(row => ({ ...row }));
+}
 
-    CREATE TABLE IF NOT EXISTS competences (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        categorie TEXT NOT NULL,
-        item TEXT NOT NULL
-    );
+async function get(sql, args = []) {
+    return (await all(sql, args))[0];
+}
 
-    CREATE TABLE IF NOT EXISTS experiences (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        poste TEXT NOT NULL,
-        entreprise TEXT NOT NULL,
-        localisation TEXT,
-        periode TEXT NOT NULL,
-        projet TEXT,
-        client TEXT,
-        equipe TEXT,
-        role TEXT,
-        ordre INTEGER DEFAULT 0
-    );
+async function run(sql, args = []) {
+    const [result] = await batch([{ sql, args }], 'write');
+    return { lastID: Number(result.lastInsertRowid), changes: result.rowsAffected };
+}
 
-    CREATE TABLE IF NOT EXISTS experience_missions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        experience_id INTEGER NOT NULL,
-        mission TEXT NOT NULL,
-        FOREIGN KEY (experience_id) REFERENCES experiences(id) ON DELETE CASCADE
-    );
+async function transaction(work) {
+    await ready;
+    const tx = await client.transaction('write');
+    try {
+        const result = await work(tx);
+        await tx.commit();
+        return result;
+    } catch (error) {
+        await tx.rollback();
+        throw error;
+    } finally { tx.close(); }
+}
 
-    CREATE TABLE IF NOT EXISTS experience_technos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        experience_id INTEGER NOT NULL,
-        techno TEXT NOT NULL,
-        FOREIGN KEY (experience_id) REFERENCES experiences(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS experience_projets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        experience_id INTEGER NOT NULL,
-        titre TEXT NOT NULL,
-        contexte TEXT,
-        FOREIGN KEY (experience_id) REFERENCES experiences(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS experience_projet_missions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        projet_id INTEGER NOT NULL,
-        mission TEXT NOT NULL,
-        FOREIGN KEY (projet_id) REFERENCES experience_projets(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS experience_projet_technos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        projet_id INTEGER NOT NULL,
-        techno TEXT NOT NULL,
-        FOREIGN KEY (projet_id) REFERENCES experience_projets(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS formations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        etab TEXT NOT NULL,
-        periode TEXT NOT NULL,
-        diplome TEXT NOT NULL,
-        ordre INTEGER DEFAULT 0
-    );
-
-    CREATE TABLE IF NOT EXISTS langues (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        langue TEXT NOT NULL,
-        niveau TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS certificats (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        intitule TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS centres_interet (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        interet TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT UNIQUE NOT NULL,
-        password_hash TEXT NOT NULL
-    );
-`;
-
-const migrationPath = path.join(__dirname, 'migrations/20261010-align-cv-aptineo.sql');
-const cvMigration = fs.readFileSync(migrationPath, 'utf8');
-
-db.serialize(() => {
-    db.exec(schema + cvMigration, (err) => {
-        if (err) {
-            console.error("Error initializing CV database:", err);
-        }
-    });
-});
-
-module.exports = db;
+module.exports = { ready, all, get, run, batch, transaction, close: () => client.close() };
