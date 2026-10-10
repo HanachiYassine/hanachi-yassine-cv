@@ -2,9 +2,9 @@
 
 Application personnelle destinée à présenter mon parcours, mes compétences et mes expériences aux recruteurs. Le CV web et le PDF utilisent les mêmes données professionnelles. Ce projet illustre la réalisation d’une interface Angular, d’une API Express, d’une administration authentifiée et d’un stockage relationnel.
 
-**Déploiement : en attente de l’activation des comptes Turso / Render et de GitHub Pages. Aucun site public fonctionnel n’est encore confirmé.**
+**Site non déployé au 10 octobre 2026 : GitHub Pages n’est pas activé et l’adresse de l’API n’est pas configurée. Les comptes Turso / Render restent à connecter pour terminer la publication.**
 
-Adresse prévue pour le CV : [hanachiyassine.github.io/hanachi-yassine-cv](https://hanachiyassine.github.io/hanachi-yassine-cv/). Ce lien sera confirmé après le premier déploiement réussi. L’administration sera accessible à l’adresse HTTPS du backend Render, suivie de `/admin/` ; cette adresse doit être ajoutée ici après sa création effective.
+Adresse cible, actuellement indisponible : `https://hanachiyassine.github.io/hanachi-yassine-cv/`. Le lien de consultation sera ajouté après vérification du premier déploiement réussi. L’administration sera accessible à l’adresse HTTPS effective du backend Render, suivie de `/admin/`.
 
 ## Fonctionnalités
 
@@ -14,7 +14,7 @@ Adresse prévue pour le CV : [hanachiyassine.github.io/hanachi-yassine-cv](https
 - Connexion administrateur avec bcrypt et jeton JWT valable une heure.
 - Sauvegardes JSON avant et après chaque modification, téléchargement et restauration d’une version précédente.
 - Choix entre SQLite local et Turso distant, y compris depuis un PC de développement.
-- Compilation et déploiement automatisés par GitHub Actions.
+- Pipeline de compilation, de vérification et de déploiement GitHub Actions, dont la publication nécessite la configuration décrite ci-dessous.
 
 Le backend de cette application est écrit en Node.js ; Java et Spring apparaissent dans le parcours professionnel présenté par le CV.
 
@@ -189,6 +189,14 @@ Le script frontend historique `npm test` lance Karma et ses anciens tests de mod
 
 Le déploiement nécessite les comptes et paramètres suivants ; leur création ne signifie pas que le site est déjà en ligne.
 
+### Pourquoi les déploiements étaient « skipped »
+
+Dans [l’exécution du 10 octobre 2026](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38016433628), les contrôles `frontend` et `backend` ont réussi, mais l’envoi de l’artefact Pages, `deploy-backend` et `deploy-pages` ont été ignorés. Leur condition exigeait une variable `PUBLIC_API_URL` non vide ; celle-ci n’était pas définie. La compilation utilisait `https://example.invalid` uniquement pour vérifier Angular, sans produire de site publié. GitHub Pages n’était pas activé non plus.
+
+Le workflow comporte désormais un contrôle **Vérifier la configuration du déploiement** sur `main`. Une URL d’API manquante ou invalide, ou un secret Render absent ou invalide, produit un échec explicite et un résumé des paramètres à renseigner. Les contrôles du code restent indépendants. La publication attend la réussite de ce contrôle et des tests ; elle est normalement ignorée sur les pull requests. Une exécution verte sur `main` ne doit donc plus masquer ces paramètres manquants.
+
+GitHub Pages héberge uniquement le frontend Angular. L’API Express, la génération du PDF et l’administration nécessitent le service Render et la base Turso : le backend ne peut pas s’exécuter sur `github.io`.
+
 ### 1. Turso
 
 Créer une base Turso compatible libSQL et conserver son URL et un jeton d’accès en écriture. Le backend crée les tables et importe le CV initial lorsque la base est vide. Les comptes administrateurs et sauvegardes sont ensuite conservés dans cette base.
@@ -213,7 +221,7 @@ Dans les paramètres du dépôt :
 3. Ajouter le secret Actions `RENDER_DEPLOY_HOOK_URL`, obtenu dans les paramètres du service Render. Cette URL doit rester secrète.
 4. Exécuter le workflow **Vérification et déploiement du CV**, ou pousser une modification sur `main`.
 
-Le workflow construit et teste le conteneur backend, vérifie le PDF réel, compile Angular avec l’adresse de l’API puis déclenche Render pour le commit vérifié et publie le frontend sur Pages. Le déclenchement Render lance un déploiement asynchrone ; sa réussite doit être confirmée dans Render. Tant que `PUBLIC_API_URL` n’est pas défini, les contrôles s’exécutent mais aucun site n’est publié. Les modifications effectuées depuis l’administration sont visibles immédiatement au prochain chargement du CV, sans commit ni reconstruction Angular.
+Le workflow vérifie la configuration de publication, construit et teste le conteneur backend, vérifie le PDF réel, compile Angular avec l’adresse de l’API puis déclenche Render pour le commit vérifié et publie le frontend sur Pages. Le déclenchement Render lance un déploiement asynchrone ; sa réussite doit être confirmée dans Render. Tant que les paramètres de déploiement manquent, leur contrôle échoue explicitement et aucun site n’est publié. Après publication, les modifications effectuées depuis l’administration sont visibles au prochain chargement du CV, sans commit ni reconstruction Angular.
 
 Le paramètre `autoDeployTrigger: 'off'` évite un déploiement Render avant les contrôles GitHub Actions. Les jetons Turso et mots de passe ne sont jamais intégrés à la compilation Angular.
 

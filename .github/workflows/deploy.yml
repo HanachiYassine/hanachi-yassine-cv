@@ -10,6 +10,17 @@ concurrency:
   group: cv-${{ github.ref }}
   cancel-in-progress: false
 jobs:
+  deployment-config:
+    name: Vérifier la configuration du déploiement
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Signaler les paramètres manquants avant publication
+        run: node scripts/check-deployment-config.cjs
   backend:
     runs-on: ubuntu-latest
     steps:
@@ -40,8 +51,8 @@ jobs:
         with:
           path: dist/angular-quickstart
   deploy-backend:
-    if: github.ref == 'refs/heads/main' && vars.PUBLIC_API_URL != ''
-    needs: [backend, frontend]
+    if: github.ref == 'refs/heads/main'
+    needs: [backend, frontend, deployment-config]
     runs-on: ubuntu-latest
     env:
       RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
@@ -56,7 +67,7 @@ jobs:
           curl --fail --silent --show-error --output /dev/null \
             --get --data-urlencode "ref=${GITHUB_SHA}" "$RENDER_DEPLOY_HOOK_URL"
   deploy-pages:
-    if: github.ref == 'refs/heads/main' && vars.PUBLIC_API_URL != ''
+    if: github.ref == 'refs/heads/main'
     needs: [backend, frontend, deploy-backend]
     runs-on: ubuntu-latest
     permissions:
