@@ -2,9 +2,9 @@
 
 Application personnelle destinée à présenter mon parcours, mes compétences et mes expériences aux recruteurs. Le CV web et le PDF utilisent les mêmes données professionnelles. Ce projet illustre la réalisation d’une interface Angular, d’une API Express, d’une administration authentifiée et d’un stockage relationnel.
 
-**État au 10 octobre 2026 : base Turso connectée, CV importé et vérifié. Le backend Render reste à créer, son adresse HTTPS à configurer et GitHub Pages à activer. Le site public n’est pas encore déployé.**
+**État au 10 octobre 2026 : GitHub Pages est activé, mais le site reste indisponible. La création Render est bloquée par une demande de carte bancaire. Cette configuration prépare un backend Netlify Free sans carte, avec Turso ; aucun déploiement public Netlify n’est encore vérifié.**
 
-Adresse cible, actuellement indisponible : `https://hanachiyassine.github.io/hanachi-yassine-cv/`. Le lien de consultation sera ajouté après vérification du premier déploiement réussi. L’administration sera accessible à l’adresse HTTPS effective du backend Render, suivie de `/admin/`.
+Adresse cible, actuellement indisponible : `https://hanachiyassine.github.io/hanachi-yassine-cv/`. Le lien de consultation sera ajouté après vérification du premier déploiement réussi. L’administration sera accessible à l’adresse HTTPS effective du backend Netlify, suivie de `/admin/`.
 
 ## Fonctionnalités
 
@@ -23,11 +23,11 @@ Le backend de cette application est écrit en Node.js ; Java et Spring apparaiss
 | Élément | Technologie / emplacement |
 |---|---|
 | Interface publique | Angular 16, TypeScript 4.9, RxJS, HTML et SCSS ; `src/app/cv/` |
-| API et administration | Node.js 22.12 minimum, Express 4 ; `backend/` |
+| API et administration | Node.js 22.17 minimum, Express 4 ; `backend/` |
 | Authentification | bcrypt, jsonwebtoken ; `backend/auth.js` |
 | Persistance | SQLite embarqué ou Turso/libSQL distant, avec `@libsql/client` |
 | PDF | EJS et Puppeteer 25 ; `backend/template.ejs`, `backend/pdf.service.js` |
-| Déploiement | GitHub Pages pour Angular, Render pour Express, Turso pour les données |
+| Déploiement | GitHub Pages pour Angular, Netlify Functions Free pour Express, Turso pour les données |
 | Vérifications | Tests d’intégration avec `node:test`, test PDF réel et compilation Angular |
 
 Le navigateur consulte `/api/cv` et `/api/pdf`. En développement, le proxy Angular transmet ces requêtes au backend local. Sur GitHub Pages, la compilation reçoit l’adresse HTTPS du backend via `PUBLIC_API_URL`. Les identifiants Turso restent exclusivement dans le backend.
@@ -38,8 +38,8 @@ Le nom interne `angular-quickstart` subsiste dans Angular CLI et dans le dossier
 
 - Git et npm.
 - **Frontend Angular 16 : Node.js 18** pour utiliser la combinaison compatible avec cette version d’Angular CLI. Les workflows isolent cet ancien outil de compilation du backend.
-- **Backend : Node.js 22.12 ou ultérieur.** Utiliser deux terminaux avec les versions appropriées, par exemple avec nvm.
-- Puppeteer télécharge Chrome lors de l’installation du backend. Sous Linux, ses dépendances système doivent être disponibles. Le Dockerfile installe Chromium, ses dépendances et les polices pour Render et les vérifications CI.
+- **Backend : Node.js 22.17 ou ultérieur.** Utiliser deux terminaux avec les versions appropriées, par exemple avec nvm.
+- Puppeteer télécharge Chrome lors de l’installation du backend. Sous Linux, ses dépendances système doivent être disponibles. Le Dockerfile installe Chromium, ses dépendances et les polices pour les vérifications CI. Sur Netlify, Puppeteer Core utilise Chromium serverless, téléchargé depuis la version officielle figée 153.0.0 de Sparticuz au premier appel PDF ; le binaire est ensuite réutilisé dans `/tmp` tant que l’instance reste disponible.
 - Un accès Internet et une URL / un jeton Turso pour le mode distant. SQLite fonctionne sans serveur de base de données ni connexion Internet après installation.
 
 ## Démarrage local
@@ -51,7 +51,7 @@ git clone https://github.com/HanachiYassine/hanachi-yassine-cv.git
 cd hanachi-yassine-cv
 # Avec Node.js 18
 npm ci
-# Avec Node.js 22.12+ dans le terminal du backend
+# Avec Node.js 22.17+ dans le terminal du backend
 cd backend
 npm ci
 cp .env.example .env
@@ -174,7 +174,7 @@ npm run build -- --configuration production --base-href /hanachi-yassine-cv/
 
 La limite d’erreur du budget SCSS a été ajustée à 6 ko pour autoriser les 4,22 ko du style existant ; aucun style du CV n’a été modifié. Le seuil d’avertissement de 2 ko reste en place.
 
-Depuis `backend/`, avec Node.js 22.12+ :
+Depuis `backend/`, avec Node.js 22.17+ :
 
 ```bash
 npm test
@@ -183,7 +183,7 @@ npm run test:pdf
 
 Les neuf tests d’intégration utilisent des bases temporaires : données initiales, authentification, modification du CV, sous-projets avec équipes et rôles, sauvegardes sans comptes, restauration, rollback, mise à niveau d’un ancien schéma et conservation des données au redémarrage. Ils ont été validés localement le 10 octobre 2026. La connexion réelle à Turso, l’import des sept expériences et neuf sous-projets, leur cohérence avec `data.json`, les relations SQL et deux sauvegardes ont également été vérifiés à cette date.
 
-À la racine, avec Node.js 22.12+, vérifier les contrôles de publication :
+À la racine, avec Node.js 22.17+, vérifier les contrôles de publication :
 
 ```bash
 node --test scripts/check-live-backend.test.cjs
@@ -195,56 +195,72 @@ Ces six tests simulent un déploiement progressif et vérifient que la publicati
 
 Le script frontend historique `npm test` lance Karma et ses anciens tests de modèle. Il n’est pas utilisé comme validation du déploiement ; la compilation de production et les tests backend sont les contrôles du workflow. Cypress n’a pas de suite dédiée configurée dans ce projet.
 
-## Déploiement gratuit et automatique
+## Déploiement gratuit sans carte bancaire
 
-Le déploiement nécessite les comptes et paramètres suivants ; leur création ne signifie pas que le site est déjà en ligne.
+L’architecture conserve toutes les fonctionnalités : **GitHub Pages** pour Angular, **Netlify Functions Free** pour l’API Express, le PDF et l’administration, **Turso Free** pour la base existante. Render n’est plus nécessaire au workflow ; le Dockerfile reste utilisé pour les tests.
 
-### Pourquoi les déploiements étaient « skipped »
+La documentation Netlify présente l’offre Free sans carte, à 0 $/mois, avec **300 crédits mensuels et une limite fixe sans recharge automatique**. Lorsque le quota est atteint, les projets sont suspendus jusqu’au prochain cycle, sans facturation supplémentaire. Le quota couvre notamment les déploiements, requêtes, transferts et fonctions ; gratuit ne signifie pas disponibilité ou capacité illimitée. Vérifier l’offre effective de Netlify et Turso avant toute publication. Aucun moyen de paiement, option payante, domaine acheté ou abonnement n’est nécessaire à cette configuration.
 
-Dans [l’exécution du 10 octobre 2026](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38016433628), les contrôles `frontend` et `backend` ont réussi, mais l’envoi de l’artefact Pages, `deploy-backend` et `deploy-pages` ont été ignorés. Leur condition exigeait une variable `PUBLIC_API_URL` non vide ; celle-ci n’était pas définie. La compilation utilisait `https://example.invalid` uniquement pour vérifier Angular, sans produire de site publié. GitHub Pages n’était pas activé non plus.
+### 1. Projet Netlify Free et Turso
 
-Le workflow comporte désormais un contrôle **Vérifier la configuration du déploiement** sur `main`. Une URL d’API manquante ou invalide, ou un secret Render absent ou invalide, produit un échec explicite et un résumé des paramètres à renseigner. Les contrôles du code restent indépendants. La publication attend la réussite de ce contrôle et des tests ; elle est normalement ignorée sur les pull requests. Une exécution verte sur `main` ne doit donc plus masquer ces paramètres manquants.
+Créer un projet Netlify sur l’offre **Free**, avec un sous-domaine gratuit `netlify.app`. Utiliser un projet à déploiement manuel : GitHub Actions publie ensuite les fichiers du commit testé avec la CLI, sans intégration Git ni publication automatique indépendante des contrôles.
 
-GitHub Pages héberge uniquement le frontend Angular. L’API Express, la génération du PDF et l’administration nécessitent le service Render et la base Turso : le backend ne peut pas s’exécuter sur `github.io`.
+Dans **Project configuration → Environment variables**, renseigner les valeurs suivantes pour le contexte **Production**. Sur Free, conserver le réglage **All scopes** : la restriction à un scope précis est une fonction payante et n’est pas nécessaire ici. Ce projet utilise uniquement des déploiements de production manuels, sans builds Git ni Deploy Previews :
 
-### 1. Turso
+| Paramètre | Valeur ou règle |
+|---|---|
+| `TURSO_DATABASE_URL` | `libsql://cv-hanachiyassine.aws-eu-west-1.turso.io` |
+| `TURSO_AUTH_TOKEN` | Jeton sécurisé de la base existante, jamais dans Git |
+| `ADMIN_EMAIL` | E-mail du premier compte administrateur |
+| `ADMIN_PASSWORD` | Mot de passe sécurisé d’au moins 12 caractères |
+| `JWT_SECRET` | Clé sécurisée d’au moins 32 caractères, distincte du jeton Turso |
+| `CORS_ORIGINS` | `https://hanachiyassine.github.io` |
 
-La base du projet est `libsql://cv-hanachiyassine.aws-eu-west-1.turso.io`. Son URL est préremplie dans `render.yaml` et `backend/.env.example`. La connexion et l’import du CV ont été vérifiés le 10 octobre 2026. La base contient les sept expériences, neuf sous-projets et deux sauvegardes de mise à niveau ; le CV courant correspond aux données professionnelles de `data.json`. L’URL seule ne permet pas de lire ou modifier la base.
+L’adaptateur impose `NODE_ENV=production` et `DATABASE_PROVIDER=turso` en production : aucune base SQLite éphémère n’est utilisée dans les fonctions. Les données et sauvegardes restent dans Turso. Le premier démarrage crée un compte uniquement si la base ne contient aucun compte ; ces paramètres ne réinitialisent pas un compte existant. La connexion Turso et l’import des sept expériences et neuf sous-projets avaient été vérifiés le 10 octobre ; cela ne vérifie pas l’abonnement du compte.
 
-Enregistrer ce jeton dans le paramètre sécurisé `TURSO_AUTH_TOKEN` de Render ou dans le fichier local `backend/.env`, jamais dans le dépôt. Le backend crée les tables et importe le CV initial lorsque la base est vide. Les comptes administrateurs et sauvegardes sont ensuite conservés dans cette base.
+Ne pas exposer les secrets aux Deploy Previews ou aux builds de pull requests. Ils restent des paramètres du backend et ne sont pas nécessaires à la compilation Angular. Le jeton de déploiement GitHub décrit ci-dessous n’est pas le jeton Turso.
 
-Le compte administrateur n’est pas encore créé dans cette base. Il sera initialisé au premier démarrage du backend avec les paramètres `ADMIN_EMAIL` et `ADMIN_PASSWORD` renseignés dans Render.
+### 2. GitHub Actions et Pages
 
-### 2. Backend Render
+Dans **Settings → Pages → Source**, choisir **GitHub Actions**. Cette source a été activée le 10 octobre 2026.
 
-[Créer le backend sur Render à partir de ce dépôt](https://render.com/deploy?repo=https://github.com/HanachiYassine/hanachi-yassine-cv), puis utiliser le Blueprint `render.yaml`. Il définit un service Docker sur l’offre `free`, un contrôle `/health` et le mode Turso. Renseigner dans Render :
+Dans **Settings → Secrets and variables → Actions**, configurer :
 
-- `TURSO_DATABASE_URL`, préremplie avec l’URL de la base du projet ; à vérifier lors de la création du service.
-- `TURSO_AUTH_TOKEN`, à saisir dans le paramètre sécurisé correspondant.
-- `ADMIN_EMAIL` et `ADMIN_PASSWORD` pour le premier compte.
-- `JWT_SECRET`, généré par le Blueprint.
-- `CORS_ORIGINS`, avec l’origine du site frontend, par défaut `https://hanachiyassine.github.io`.
+| Type | Nom | Contenu |
+|---|---|---|
+| Variable | `PUBLIC_API_URL` | Origine HTTPS effective du projet Netlify, sans `/api` |
+| Variable | `NETLIFY_SITE_ID` | Project ID du projet Netlify (UUID), depuis sa configuration générale |
+| Secret | `NETLIFY_AUTH_TOKEN` | Jeton de déploiement Netlify, à conserver secret |
 
-Le serveur lit le port fourni par Render via `PORT` et écoute sur `0.0.0.0`. Le Dockerfile exclut les fichiers SQLite, sauvegardes et `.env` du déploiement. Après démarrage, vérifier `/health`, `/api/cv`, `/api/pdf` et la connexion `/admin/` sur l’URL Render effective.
+Le secret Render `RENDER_DEPLOY_HOOK_URL` n’est plus utilisé. Aucun identifiant Turso ou mot de passe d’administration n’est nécessaire dans GitHub Actions.
 
-### 3. GitHub Actions et GitHub Pages
+Lancer une **exécution complète** du workflow **Vérification et déploiement du CV** sur `main`. Le pipeline :
 
-Dans les paramètres du dépôt :
+1. Vérifie les paramètres Actions et refuse une origine locale, une URL d’exemple ou un Project ID invalide.
+2. Construit le conteneur, vérifie les transactions/sauvegardes et génère un vrai PDF.
+3. Teste le handler Lambda, puis le paquet réellement construit par Netlify : CV complet, CORS, administration protégée et transport binaire d’un vrai PDF Chromium.
+4. Compile Angular avec l’origine HTTPS effective de l’API.
+5. Embarque le SHA du commit dans la fonction puis déploie ce commit via la CLI Netlify figée.
+6. Vérifie `/health` et son SHA exact, `/api/cv`, CORS pour Pages et `/api/pdf` avant de publier Angular sur Pages.
 
-1. Choisir **Pages → Source → GitHub Actions**.
-2. Ajouter la variable Actions `PUBLIC_API_URL` contenant l’origine HTTPS effective du backend Render, sans `/api`.
-3. Ajouter le secret Actions `RENDER_DEPLOY_HOOK_URL`, obtenu dans les paramètres du service Render. Cette URL doit rester secrète.
-4. Exécuter le workflow **Vérification et déploiement du CV**, ou pousser une modification sur `main`.
+Les déploiements sont ignorés sur les pull requests. En l’absence de configuration Actions, les tests restent indépendants et la publication est bloquée explicitement. Lancer uniquement le job précédemment échoué ne suffit pas : Angular doit être recompilé et son artefact Pages produit.
 
-Le workflow vérifie la configuration de publication, construit et teste le conteneur backend, vérifie le PDF réel, compile Angular avec l’adresse de l’API puis déclenche Render pour le commit vérifié et publie le frontend sur Pages. Le déclenchement Render lance un déploiement asynchrone. Avant de publier Pages, le workflow attend jusqu’à vingt minutes que `/health` annonce le commit vérifié via `RENDER_GIT_COMMIT`, puis contrôle le chargement du CV, les en-têtes CORS pour l’origine Pages et une génération PDF réelle. Un échec bloque la publication du frontend ; un ancien backend encore disponible ne suffit pas à valider le nouveau déploiement. Tant que les paramètres de déploiement manquent, leur contrôle échoue explicitement et aucun site n’est publié. Après publication, les modifications effectuées depuis l’administration sont visibles au prochain chargement du CV, sans commit ni reconstruction Angular.
+### 3. Adresses et limites à vérifier
 
-Le paramètre `autoDeployTrigger: 'off'` évite un déploiement Render avant les contrôles GitHub Actions. Les jetons Turso et mots de passe ne sont jamais intégrés à la compilation Angular.
+Sur l’origine Netlify effective, vérifier `/health`, `/api/cv`, `/api/pdf` et `/admin/`. Le frontend cible `https://hanachiyassine.github.io/hanachi-yassine-cv/` n’est considéré publié qu’après un workflow réussi et un contrôle HTTP réel.
 
-La configuration vise uniquement les offres gratuites : espace Render **Hobby**, service **Free** (`plan: free`), base Turso **Free** et GitHub Pages pour ce dépôt public. Aucun abonnement payant, disque persistant Render ou nom de domaine acheté n’est nécessaire. Vérifier les offres effectives des comptes avant la première création ; la connexion à la base Turso ne permet pas à elle seule de vérifier son abonnement.
+Le fichier `netlify.toml` ne publie que les fichiers d’administration et la fonction API ; les bases SQLite, sauvegardes et `.env` sont exclus de ces fichiers. Le SHA retourné par `/health` est généré à la compilation depuis `GITHUB_SHA` ou `COMMIT_REF`, et non depuis un paramètre modifiable à l’exécution.
 
-Pour conserver la contrainte « aucun coût », ne pas ajouter de moyen de paiement à Render ni activer d’option payante. Si la création du service impose un paiement, arrêter cette procédure. Render peut facturer les dépassements de quotas lorsqu’un moyen de paiement est enregistré ; sans moyen de paiement, les services ou nouvelles compilations sont suspendus lorsque les quotas concernés sont épuisés. Voir les [conditions officielles de l’offre gratuite](https://render.com/docs/free).
+Les fonctions Netlify ont une limite d’exécution de 60 secondes, 1 Go de mémoire et une limite de réponse binaire d’environ 4,5 Mo. Le premier PDF de chaque nouvelle instance nécessite le téléchargement du navigateur et peut être plus lent. Un test local du handler ne remplace pas une vérification en production ; le pipeline bloque Pages si le PDF réel ne fonctionne pas.
 
-Ces offres gratuites ont des quotas. Render met le service en veille après une période d’inactivité : la première consultation peut attendre son réveil. Les données restent dans Turso.
+Pour reproduire les vérifications serverless sans accéder à Turso :
 
-Documentation officielle : [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Render gratuit](https://render.com/docs/free), [déclenchement Render](https://render.com/docs/deploy-hooks), [Turso JavaScript](https://docs.turso.tech/sdk/ts/reference), [Puppeteer](https://pptr.dev/troubleshooting).
+```bash
+cd backend
+npm ci
+npm run test:netlify
+```
 
+Les tests utilisent une base SQLite temporaire et des identifiants aléatoires de test. Les modifications administratives de production restent visibles au prochain chargement du CV, sans reconstruction Angular.
+
+Documentation officielle : [Netlify Free sans carte](https://www.netlify.com/blog/introducing-netlify-free-plan/), [Netlify Free et limite de crédits](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/), [Express sur Netlify](https://docs.netlify.com/build/frameworks/framework-setup-guides/express/), [limites des fonctions](https://docs.netlify.com/build/functions/configuration/), [Chromium serverless](https://github.com/Sparticuz/chromium), [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Turso JavaScript](https://docs.turso.tech/sdk/ts/reference).

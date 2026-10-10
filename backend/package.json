@@ -8,19 +8,28 @@
     "test": "node --test test/*.test.js",
     "backup": "node scripts/backup.js",
     "restore": "node scripts/restore.js",
-    "test:pdf": "node --test test/pdf.smoke.js"
+    "test:pdf": "node --test test/pdf.smoke.js",
+    "build:netlify": "node netlify/build.cjs",
+    "test:netlify": "node --test test/netlify.smoke.js",
+    "test:bundle": "node netlify/check-bundle.cjs"
   },
   "dependencies": {
+    "@libsql/client": "^0.18.0",
+    "@sparticuz/chromium-min": "153.0.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "puppeteer": "^25.13.0",
-    "@libsql/client": "^0.18.0",
-    "dotenv": "^17.2.3"
+    "puppeteer-core": "25.13.0",
+    "serverless-http": "3.2.0"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.17.0"
+  },
+  "devDependencies": {
+    "extract-zip": "2.0.1"
   }
 }

@@ -43,6 +43,8 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+/backend/netlify/public/
+/backend/netlify/commit.json
 
 # Configuration et données locales
 .env
