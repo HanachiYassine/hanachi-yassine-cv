@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
-      NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v6
       - name: Signaler les paramètres manquants avant publication
@@ -76,22 +74,17 @@ jobs:
     needs: [backend, serverless, frontend, deployment-config]
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: write
     env:
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
-      PUPPETEER_SKIP_DOWNLOAD: 'true'
       PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
-      - run: npm ci --prefix backend --no-audit --no-fund
-      - run: npx --yes netlify-cli@27.12.0 build --offline
-      - name: Publier le backend Netlify du commit vérifié
-        run: npx --yes netlify-cli@27.12.0 deploy --no-build --prod --context production --dir "$GITHUB_WORKSPACE/backend/netlify/public" --functions "$GITHUB_WORKSPACE/backend/.netlify/functions" --message "$GITHUB_SHA"
+      - name: Envoyer le commit vérifié à la branche de production Netlify
+        run: git push origin HEAD:refs/heads/netlify-production
       - name: Vérifier le commit publié, le CV, CORS et le PDF
         run: node scripts/check-live-backend.cjs
   deploy-pages:

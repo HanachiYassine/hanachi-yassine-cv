@@ -2,7 +2,7 @@
 
 Application personnelle destinée à présenter mon parcours, mes compétences et mes expériences aux recruteurs. Le CV web et le PDF utilisent les mêmes données professionnelles. Ce projet illustre la réalisation d’une interface Angular, d’une API Express, d’une administration authentifiée et d’un stockage relationnel.
 
-**État au 10 octobre 2026 : GitHub Pages est activé, mais le site reste indisponible. La création Render est bloquée par une demande de carte bancaire. Cette configuration prépare un backend Netlify Free sans carte, avec Turso ; aucun déploiement public Netlify n’est encore vérifié.**
+**État au 10 octobre 2026 : GitHub Pages est activé, mais le site reste indisponible. La création Render est bloquée par une demande de carte bancaire. Cette configuration prépare un backend Netlify Free sans carte, avec Turso ; les huit paramètres privés du backend sont configurés dans Netlify en production ; la publication conjointe backend/frontend reste à valider.**
 
 Adresse cible, actuellement indisponible : `https://hanachiyassine.github.io/hanachi-yassine-cv/`. Le lien de consultation sera ajouté après vérification du premier déploiement réussi. L’administration sera accessible à l’adresse HTTPS effective du backend Netlify, suivie de `/admin/`.
 
@@ -199,13 +199,15 @@ Le script frontend historique `npm test` lance Karma et ses anciens tests de mod
 
 L’architecture conserve toutes les fonctionnalités : **GitHub Pages** pour Angular, **Netlify Functions Free** pour l’API Express, le PDF et l’administration, **Turso Free** pour la base existante. Render n’est plus nécessaire au workflow ; le Dockerfile reste utilisé pour les tests.
 
-La documentation Netlify présente l’offre Free sans carte, à 0 $/mois, avec **300 crédits mensuels et une limite fixe sans recharge automatique**. Lorsque le quota est atteint, les projets sont suspendus jusqu’au prochain cycle, sans facturation supplémentaire. Le quota couvre notamment les déploiements, requêtes, transferts et fonctions ; gratuit ne signifie pas disponibilité ou capacité illimitée. Vérifier l’offre effective de Netlify et Turso avant toute publication. Aucun moyen de paiement, option payante, domaine acheté ou abonnement n’est nécessaire à cette configuration.
+Le compte existant est sur **Free Legacy à 0 $/mois**, sans carte enregistrée, vérifié dans son tableau de bord le 10 octobre 2026. Cette offre inclut 300 minutes de build, 100 Go de bande passante et, pour les fonctions de ce projet, 125 000 requêtes et 100 heures par mois. Les limites de l’offre Free sont fixes ; aucun moyen de paiement ni option payante n’a été ajouté. Les nouveaux comptes Free utilisent une autre offre de 300 crédits mensuels : elle ne décrit pas le compte actuel. Gratuit ne signifie pas disponibilité ou capacité illimitée. L’abonnement Turso reste à vérifier depuis le compte personnel.
 
 ### 1. Projet Netlify Free et Turso
 
-Créer un projet Netlify sur l’offre **Free**, avec un sous-domaine gratuit `netlify.app`. Utiliser un projet à déploiement manuel : GitHub Actions publie ensuite les fichiers du commit testé avec la CLI, sans intégration Git ni publication automatique indépendante des contrôles.
+Réutiliser le projet Free existant et son intégration GitHub. Dans **Project configuration → Developer settings → Continuous deployment → Branches and deploy contexts**, définir la branche de production **`netlify-production`**, les branch deploys sur **None** et les Deploy Previews sur **None**. Le workflow avance cette branche uniquement après les tests de `main`, sans force push. Netlify compile le même commit ; `/health` doit ensuite annoncer son SHA exact avant publication Pages. La branche est réservée à ce workflow et ne doit pas recevoir de commits manuels.
 
-Dans **Project configuration → Environment variables**, renseigner les valeurs suivantes pour le contexte **Production**. Sur Free, conserver le réglage **All scopes** : la restriction à un scope précis est une fonction payante et n’est pas nécessaire ici. Ce projet utilise uniquement des déploiements de production manuels, sans builds Git ni Deploy Previews :
+`netlify.toml` définit la bonne configuration backend : base `backend`, commande `npm run build:netlify`, publication `netlify/public`, fonctions `netlify/functions`, Node 22. La commande `ignore = "exit 1"` demande une construction pour chaque commit promu, y compris si seul Angular a changé, afin de conserver le contrôle du SHA.
+
+Dans **Project configuration → Environment variables**, renseigner les valeurs suivantes pour le contexte **Production**. Cocher **Contains secret values** et choisir **Specific deploy contexts → Production uniquement**, sans valeur dans les aperçus, branches, agents ou développement local. Sur Free, conserver les scopes de secrets proposés par Netlify (Builds, Functions, Runtime) ; une restriction plus fine nécessite une offre payante et n’est pas nécessaire ici :
 
 | Paramètre | Valeur ou règle |
 |---|---|
@@ -218,7 +220,7 @@ Dans **Project configuration → Environment variables**, renseigner les valeurs
 
 L’adaptateur impose `NODE_ENV=production` et `DATABASE_PROVIDER=turso` en production : aucune base SQLite éphémère n’est utilisée dans les fonctions. Les données et sauvegardes restent dans Turso. Le premier démarrage crée un compte uniquement si la base ne contient aucun compte ; ces paramètres ne réinitialisent pas un compte existant. La connexion Turso et l’import des sept expériences et neuf sous-projets avaient été vérifiés le 10 octobre ; cela ne vérifie pas l’abonnement du compte.
 
-Ne pas exposer les secrets aux Deploy Previews ou aux builds de pull requests. Ils restent des paramètres du backend et ne sont pas nécessaires à la compilation Angular. Le jeton de déploiement GitHub décrit ci-dessous n’est pas le jeton Turso.
+Ne pas exposer les secrets aux Deploy Previews ou aux builds de pull requests. Ils restent des paramètres du backend et ne sont pas nécessaires à la compilation Angular. L’intégration GitHub existante suffit au déploiement Netlify ; aucun jeton personnel Netlify supplémentaire n’est nécessaire.
 
 ### 2. GitHub Actions et Pages
 
@@ -229,21 +231,20 @@ Dans **Settings → Secrets and variables → Actions**, configurer :
 | Type | Nom | Contenu |
 |---|---|---|
 | Variable | `PUBLIC_API_URL` | Origine HTTPS effective du projet Netlify, sans `/api` |
-| Variable | `NETLIFY_SITE_ID` | Project ID du projet Netlify (UUID), depuis sa configuration générale |
-| Secret | `NETLIFY_AUTH_TOKEN` | Jeton de déploiement Netlify, à conserver secret |
+| Variable facultative | `NETLIFY_SITE_ID` | Project ID du projet Netlify, conservé comme repère : `bb2fa144-01c3-456a-9d02-ad73a583e1fd` |
 
-Le secret Render `RENDER_DEPLOY_HOOK_URL` n’est plus utilisé. Aucun identifiant Turso ou mot de passe d’administration n’est nécessaire dans GitHub Actions.
+Les secrets `RENDER_DEPLOY_HOOK_URL` et `NETLIFY_AUTH_TOKEN` ne sont pas utilisés. Le job `deploy-backend` utilise seulement le jeton temporaire GitHub Actions avec `contents: write` pour avancer `netlify-production` ; les autres jobs restent en lecture seule. Aucun identifiant Turso ou mot de passe d’administration n’est nécessaire dans GitHub Actions.
 
 Lancer une **exécution complète** du workflow **Vérification et déploiement du CV** sur `main`. Le pipeline :
 
-1. Vérifie les paramètres Actions et refuse une origine locale, une URL d’exemple ou un Project ID invalide.
+1. Vérifie les paramètres Actions et refuse une origine locale, une URL d’exemple ou une origine HTTPS invalide.
 2. Construit le conteneur, vérifie les transactions/sauvegardes et génère un vrai PDF.
 3. Teste le handler Lambda, puis le paquet réellement construit par Netlify : CV complet, CORS, administration protégée et transport binaire d’un vrai PDF Chromium.
 4. Compile Angular avec l’origine HTTPS effective de l’API.
-5. Embarque le SHA du commit dans la fonction puis déploie ce commit via la CLI Netlify figée.
+5. Avance `netlify-production` vers le commit validé ; l’intégration GitHub fait construire Netlify avec le SHA embarqué dans la fonction.
 6. Vérifie `/health` et son SHA exact, `/api/cv`, CORS pour Pages et `/api/pdf` avant de publier Angular sur Pages.
 
-Les déploiements sont ignorés sur les pull requests. En l’absence de configuration Actions, les tests restent indépendants et la publication est bloquée explicitement. Lancer uniquement le job précédemment échoué ne suffit pas : Angular doit être recompilé et son artefact Pages produit.
+Les déploiements sont ignorés sur les pull requests. En l’absence de configuration Actions, les tests restent indépendants et la publication est bloquée explicitement. Lancer uniquement le job précédemment échoué ne suffit pas : Angular doit être recompilé et son artefact Pages produit. Si le build Netlify échoue pour un commit déjà promu, corriger ses paramètres puis relancer ce build dans **Deploys → Trigger deploy**, avant de relancer le workflow complet.
 
 ### 3. Adresses et limites à vérifier
 
@@ -263,4 +264,4 @@ npm run test:netlify
 
 Les tests utilisent une base SQLite temporaire et des identifiants aléatoires de test. Les modifications administratives de production restent visibles au prochain chargement du CV, sans reconstruction Angular.
 
-Documentation officielle : [Netlify Free sans carte](https://www.netlify.com/blog/introducing-netlify-free-plan/), [Netlify Free et limite de crédits](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/), [Express sur Netlify](https://docs.netlify.com/build/frameworks/framework-setup-guides/express/), [limites des fonctions](https://docs.netlify.com/build/functions/configuration/), [Chromium serverless](https://github.com/Sparticuz/chromium), [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Turso JavaScript](https://docs.turso.tech/sdk/ts/reference).
+Documentation officielle : [offres Netlify Legacy](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-legacy-plans/legacy-pricing-plans/), [branche de production Netlify](https://docs.netlify.com/deploy/deploy-overview/), [Netlify Free sans carte](https://www.netlify.com/blog/introducing-netlify-free-plan/), [Netlify Free et limite de crédits des nouveaux comptes](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/), [Express sur Netlify](https://docs.netlify.com/build/frameworks/framework-setup-guides/express/), [limites des fonctions](https://docs.netlify.com/build/functions/configuration/), [Chromium serverless](https://github.com/Sparticuz/chromium), [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Turso JavaScript](https://docs.turso.tech/sdk/ts/reference).

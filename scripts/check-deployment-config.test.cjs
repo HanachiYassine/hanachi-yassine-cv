@@ -1,21 +1,17 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { apiError, configurationErrors } = require('./check-deployment-config.cjs');
-const configured = { PUBLIC_API_URL: 'https://cv-api.netlify.app', NETLIFY_AUTH_TOKEN: 'test-token',
-    NETLIFY_SITE_ID: '00000000-0000-0000-0000-000000000001' };
+const configured = { PUBLIC_API_URL: 'https://cv-api.netlify.app' };
 
-test('Netlify accepte une origine HTTPS effective, un Project ID et un jeton', () => {
+test('une origine HTTPS effective suffit sans jeton Netlify supplémentaire', () => {
     assert.deepEqual(configurationErrors(configured), []);
     assert.equal(apiError(configured.PUBLIC_API_URL), null);
 });
 
-test('les trois paramètres absents sont signalés sans exposer de valeurs', () => {
+test('une origine absente est signalée sans exposer de valeurs', () => {
     const errors = configurationErrors({});
-    assert.equal(errors.length, 3);
+    assert.equal(errors.length, 1);
     assert.ok(errors.some(error => error.includes('PUBLIC_API_URL')));
-    assert.ok(errors.some(error => error.includes('NETLIFY_AUTH_TOKEN')));
-    assert.ok(errors.some(error => error.includes('NETLIFY_SITE_ID')));
-    assert.ok(configurationErrors({ ...configured, NETLIFY_SITE_ID: 'incorrect' }).length);
 });
 
 test('les URL locales, exemples, identifiants et chemins sont refusés', () => {

@@ -15,11 +15,7 @@ function apiError(value) {
 }
 
 function configurationErrors(env) {
-    const site = env.NETLIFY_SITE_ID || '';
-    return [apiError(env.PUBLIC_API_URL),
-        !env.NETLIFY_AUTH_TOKEN && 'Secret Actions NETLIFY_AUTH_TOKEN manquant : créer un jeton de déploiement Netlify.',
-        !/^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(site) &&
-            'Variable Actions NETLIFY_SITE_ID absente ou invalide : copier le Project ID Netlify.'].filter(Boolean);
+    return [apiError(env.PUBLIC_API_URL)].filter(Boolean);
 }
 
 function deploymentSummary(errors) {

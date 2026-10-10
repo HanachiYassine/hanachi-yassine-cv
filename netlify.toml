@@ -1,6 +1,8 @@
 [build]
   base = "backend"
   command = "npm run build:netlify"
+  # Chaque commit promu doit annoncer son SHA, même si seul Angular a changé.
+  ignore = "exit 1"
   publish = "netlify/public"
   functions = "netlify/functions"
 
