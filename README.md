@@ -39,7 +39,7 @@ Le nom interne `angular-quickstart` subsiste dans Angular CLI et dans le dossier
 - Git et npm.
 - **Frontend Angular 16 : Node.js 18** pour utiliser la combinaison compatible avec cette version d’Angular CLI. Les workflows isolent cet ancien outil de compilation du backend.
 - **Backend : Node.js 22.12 ou ultérieur.** Utiliser deux terminaux avec les versions appropriées, par exemple avec nvm.
-- Puppeteer télécharge Chrome lors de l’installation du backend. Sous Linux, ses dépendances système doivent être disponibles. Le Dockerfile les installe pour Render et les vérifications CI.
+- Puppeteer télécharge Chrome lors de l’installation du backend. Sous Linux, ses dépendances système doivent être disponibles. Le Dockerfile installe Chromium, ses dépendances et les polices pour Render et les vérifications CI.
 - Un accès Internet et une URL / un jeton Turso pour le mode distant. SQLite fonctionne sans serveur de base de données ni connexion Internet après installation.
 
 ## Démarrage local

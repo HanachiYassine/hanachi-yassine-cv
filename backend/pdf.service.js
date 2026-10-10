@@ -28,6 +28,7 @@ async function generatePdf() {
     try {
         const html = await renderHtml();
         browser = await puppeteer.launch({ headless: true, timeout: 30000,
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
             args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
         return await printPage(browser, html);
     } finally {
