@@ -1,6 +1,7 @@
 [build]
   base = "backend"
-  command = "npm run build:netlify"
+  # Réinstaller aussi les modules natifs historiques suivis dans Git.
+  command = "npm ci --include=dev --no-audit --no-fund && npm run build:netlify"
   # Chaque commit promu doit annoncer son SHA, même si seul Angular a changé.
   ignore = "exit 1"
   publish = "netlify/public"
@@ -10,6 +11,9 @@
   NODE_VERSION = "22"
   AWS_LAMBDA_JS_RUNTIME = "nodejs22.x"
   PUPPETEER_SKIP_DOWNLOAD = "true"
+  CYPRESS_INSTALL_BINARY = "0"
+  # Ces paramètres publics déclenchent des faux positifs ; les credentials restent scannés.
+  SECRETS_SCAN_OMIT_KEYS = "ADMIN_EMAIL,CORS_ORIGINS,DATABASE_PROVIDER,NODE_ENV,TURSO_DATABASE_URL"
 
 [functions]
   node_bundler = "zisi"
@@ -31,3 +35,8 @@
   for = "/admin/*"
   [headers.values]
     Cache-Control = "no-store"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

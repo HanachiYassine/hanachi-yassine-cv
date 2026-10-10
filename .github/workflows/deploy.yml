@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUPPETEER_SKIP_DOWNLOAD: 'true'
+      PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL || 'https://example.invalid' }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -64,12 +65,9 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm ci --no-audit --no-fund
       - run: node scripts/configure-frontend.cjs
-      - run: npm run build -- --configuration production --base-href /hanachi-yassine-cv/
-      - uses: actions/upload-pages-artifact@v4
-        if: github.ref == 'refs/heads/main' && vars.PUBLIC_API_URL != ''
-        with:
-          path: dist/angular-quickstart
+      - run: npm run build -- --configuration production --base-href /
   deploy-backend:
+    name: Publier Angular et Express ensemble sur Netlify
     if: github.ref == 'refs/heads/main'
     needs: [backend, serverless, frontend, deployment-config]
     runs-on: ubuntu-latest
@@ -78,6 +76,7 @@ jobs:
       contents: write
     env:
       PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
+      PUBLIC_SITE_ORIGIN: ${{ vars.PUBLIC_API_URL }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -85,20 +84,5 @@ jobs:
           node-version: '22'
       - name: Envoyer le commit vérifié à la branche de production Netlify
         run: git push origin HEAD:refs/heads/netlify-production
-      - name: Vérifier le commit publié, le CV, CORS et le PDF
+      - name: Vérifier Angular, le commit publié, le CV, CORS et le PDF
         run: node scripts/check-live-backend.cjs
-  deploy-pages:
-    if: github.ref == 'refs/heads/main'
-    needs: [backend, frontend, deploy-backend]
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/configure-pages@v5
-      - name: Publier le CV
-        id: deployment
-        uses: actions/deploy-pages@v4

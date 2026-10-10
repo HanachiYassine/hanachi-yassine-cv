@@ -15,13 +15,16 @@ function respond(state, req, res) {
         return res.end(JSON.stringify({ status: 'ok', commit }));
     }
     if (req.url === '/api/cv') return res.end(JSON.stringify(state.cv));
+    if (req.url === '/deployment.json') return res.end(JSON.stringify({ commit: state.frontendCommit }));
+    if (req.url === '/') { res.setHeader('Content-Type', 'text/html'); return res.end(state.html); }
     res.statusCode = state.pdfStatus;
     res.end(state.pdf);
 }
 
 async function fixture(t, overrides = {}) {
     const state = { requests: [], healthCalls: 0, commits: ['ancien', 'nouveau'], cors: origin,
-        cv, pdf: '%PDF-1.4\n' + 'x'.repeat(1100), pdfStatus: 200, ...overrides };
+        cv, frontendCommit: 'nouveau', html: '<base href="/"><app-root></app-root>',
+        pdf: '%PDF-1.4\n' + 'x'.repeat(1100), pdfStatus: 200, ...overrides };
     const server = http.createServer((req, res) => respond(state, req, res));
     server.listen(0, '127.0.0.1');
     await once(server, 'listening');
@@ -30,10 +33,10 @@ async function fixture(t, overrides = {}) {
         commit: 'nouveau', intervalMs: 1, maxWaitMs: 1000 } };
 }
 
-test('attend le nouveau commit puis charge le CV et le PDF avec l’origine Pages', async t => {
+test('attend le nouveau commit puis vérifie Angular, le CV et le PDF', async t => {
     const { state, config } = await fixture(t);
     await runChecks(config);
-    assert.deepEqual(state.requests.map(req => req.path), ['/health', '/health', '/api/cv', '/api/pdf']);
+    assert.deepEqual(state.requests.map(req => req.path), ['/health', '/health', '/deployment.json', '/', '/api/cv', '/api/pdf']);
     assert.ok(state.requests.every(req => req.origin === origin));
 });
 
@@ -44,6 +47,8 @@ test('un ancien backend sain ne suffit pas à autoriser la publication', async t
 });
 
 const failures = [
+    ['frontend d’un ancien commit', { frontendCommit: 'ancien' }, /même commit/],
+    ['frontend compilé pour un sous-chemin', { html: '<base href="/cv/"><app-root></app-root>' }, /racine Netlify/],
     ['CV incomplet', { cv: {} }, /Objet invalide/],
     ['CORS incompatible avec le navigateur', { cors: 'https://autre.example' }, /CORS_ORIGINS/],
     ['PDF vide ou invalide', { pdf: 'réponse sans PDF' }, /PDF reçu/],
