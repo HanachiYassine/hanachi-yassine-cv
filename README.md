@@ -190,7 +190,7 @@ Les neuf tests d’intégration utilisent des bases temporaires : données initi
 node --test scripts/check-live-backend.test.cjs
 ```
 
-Ces six tests simulent un déploiement progressif et vérifient que la publication est bloquée si le commit reste ancien, si le CV est incomplet, si CORS empêche le navigateur d’accéder à l’API ou si le PDF est invalide ou en erreur. Ils ont été validés localement le 10 octobre 2026.
+Ces huit tests simulent un déploiement progressif et vérifient que la publication est bloquée si le commit reste ancien, si le CV est incomplet, si CORS empêche le navigateur d’accéder à l’API ou si le PDF est invalide ou en erreur. Ils ont été validés localement le 10 octobre 2026.
 
 `test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La construction du conteneur, les neuf tests backend, la génération réelle du PDF et la compilation Angular ont été validés le 10 octobre 2026 dans [GitHub Actions](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38021956315). La publication publique doit aussi vérifier la fonction Netlify, le PDF et le frontend du même commit.
 
@@ -231,7 +231,7 @@ Une base vide est initialisée une seule fois ; les données d’une base exista
 
 ### GitHub Actions
 
-Dans **Settings → Secrets and variables → Actions → Variables**, définir **`PUBLIC_API_URL=https://soft-tartufo-259d9b.netlify.app`**. Aucun jeton personnel Netlify ni `RENDER_DEPLOY_HOOK_URL` n’est utilisé. L’intégration GitHub existante lance Netlify ; le workflow utilise le `GITHUB_TOKEN` temporaire avec `contents: write` uniquement dans le job de publication.
+L’origine publique **`PUBLIC_API_URL=https://soft-tartufo-259d9b.netlify.app`** est définie une seule fois dans l’environnement du workflow versionné. Les anciennes variables Actions de ce nom ne sont plus utilisées. Aucun jeton personnel Netlify ni `RENDER_DEPLOY_HOOK_URL` n’est utilisé. L’intégration GitHub existante lance Netlify ; le workflow utilise le `GITHUB_TOKEN` temporaire avec `contents: write` uniquement dans le job de publication. Ce job récupère l’historique Git complet (`fetch-depth: 0`) pour vérifier le fast-forward de la branche distante.
 
 À chaque commit de `main`, le workflow :
 

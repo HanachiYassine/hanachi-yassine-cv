@@ -22,11 +22,11 @@ function deploymentSummary(errors) {
     return errors.length ? [
         '## Déploiement bloqué : configuration incomplète', '',
         ...errors.map(error => `- ${error}`), '',
-        'Activer également Settings → Pages → Source → GitHub Actions.',
+        'Relier le vrai dépôt CV au projet Netlify et à la branche netlify-production.',
         'Les compilations et tests peuvent réussir sans publier le site.',
         'Configurer le backend Netlify Free et Turso, puis relancer le workflow complet sur main.', ''
     ] : ['## Configuration de déploiement présente', '',
-        'La publication attend encore les contrôles backend/frontend et les réglages GitHub Pages.', ''];
+        'La publication Netlify attend encore les contrôles backend/frontend et les paramètres de production.', ''];
 }
 
 function checkConfiguration() {

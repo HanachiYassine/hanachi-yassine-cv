@@ -6,6 +6,8 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+env:
+  PUBLIC_API_URL: https://soft-tartufo-259d9b.netlify.app
 concurrency:
   group: cv-${{ github.ref }}
   cancel-in-progress: false
@@ -14,8 +16,6 @@ jobs:
     name: Vérifier la configuration du déploiement
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    env:
-      PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
     steps:
       - uses: actions/checkout@v6
       - name: Signaler les paramètres manquants avant publication
@@ -37,7 +37,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUPPETEER_SKIP_DOWNLOAD: 'true'
-      PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL || 'https://example.invalid' }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -54,7 +53,6 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
     env:
-      PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL || 'https://example.invalid' }}
       CYPRESS_INSTALL_BINARY: '0'
     steps:
       - uses: actions/checkout@v6
@@ -74,11 +72,10 @@ jobs:
     timeout-minutes: 25
     permissions:
       contents: write
-    env:
-      PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
-      PUBLIC_SITE_ORIGIN: ${{ vars.PUBLIC_API_URL }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
