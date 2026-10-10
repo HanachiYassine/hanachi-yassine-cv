@@ -26,6 +26,10 @@ jobs:
       - uses: actions/checkout@v6
       - name: Vérifier les contrôles du backend en ligne
         run: node --test scripts/check-live-backend.test.cjs scripts/check-deployment-config.test.cjs
+      - name: Vérifier la syntaxe de la récupération administrateur
+        run: |
+          node --check backend/public/admin/password-recovery.js
+          node --check scripts/check-password-recovery.cjs
       - name: Construire le conteneur du backend
         run: docker build --tag cv-backend .
       - name: Vérifier API, transactions et sauvegardes dans le conteneur
@@ -83,3 +87,5 @@ jobs:
         run: git push origin HEAD:refs/heads/netlify-production
       - name: Vérifier Angular, le commit publié, le CV, CORS et le PDF
         run: node scripts/check-live-backend.cjs
+      - name: Vérifier la publication de la récupération administrateur
+        run: node scripts/check-password-recovery.cjs

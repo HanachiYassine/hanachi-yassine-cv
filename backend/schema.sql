@@ -110,3 +110,19 @@ CREATE TABLE IF NOT EXISTS cv_backups (
     reason TEXT NOT NULL,
     data_json TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    token_hash TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS password_reset_tokens_user ON password_reset_tokens(user_id);
+CREATE TABLE IF NOT EXISTS password_reset_limits (
+    bucket TEXT PRIMARY KEY,
+    count INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS user_auth_state (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    version INTEGER NOT NULL DEFAULT 0
+);

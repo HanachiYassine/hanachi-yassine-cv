@@ -1,5 +1,5 @@
 function route(handler) {
-    return (req, res, next) => Promise.resolve().then(() => handler(req, res)).catch(next);
+    return (req, res, next) => Promise.resolve().then(() => handler(req, res, next)).catch(next);
 }
 
 function downloadJson(res, data, filename) {

@@ -245,3 +245,34 @@ Les pull requests exécutent les tests sans publication ni paramètres privés. 
 Le premier PDF d’une instance télécharge Chromium ; les suivants réutilisent `/tmp`. Les fonctions ont une limite d’exécution de 60 secondes, 1 Go de mémoire et environ 4,5 Mo de réponse binaire. Les vérifications locales et CI ne remplacent pas les contrôles publics.
 
 Documentation officielle : [offres Netlify Legacy](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-legacy-plans/legacy-pricing-plans/), [branche de production Netlify](https://docs.netlify.com/deploy/deploy-overview/), [Netlify Free sans carte](https://www.netlify.com/blog/introducing-netlify-free-plan/), [Netlify Free et limite de crédits des nouveaux comptes](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/), [Express sur Netlify](https://docs.netlify.com/build/frameworks/framework-setup-guides/express/), [limites des fonctions](https://docs.netlify.com/build/functions/configuration/), [Chromium serverless](https://github.com/Sparticuz/chromium), [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Turso JavaScript](https://docs.turso.tech/sdk/ts/reference).
+
+## Mot de passe administrateur oublié
+
+Dans `/admin/`, choisir **Mot de passe oublié ?**, puis **Envoyer le lien de récupération**. Le destinataire est uniquement le compte existant dont l’e-mail correspond à `ADMIN_EMAIL` : aucun e-mail fourni par un visiteur ne peut le remplacer. La réponse publique ne révèle pas si ce compte existe.
+
+Le lien reçu ouvre `/admin/reset-password.html`. Son jeton aléatoire est placé dans le fragment de l’URL, supprimé de la barre d’adresse dès le chargement et envoyé uniquement dans le corps JSON lors de la validation. Il expire après 15 minutes ; seul son hash SHA-256 est conservé en base. Le changement bcrypt et la consommation du lien sont transactionnels ; tous les autres liens et les anciennes sessions JWT de ce compte sont invalidés. Il faut ensuite se reconnecter. Le CV et ses sauvegardes ne sont pas modifiés.
+
+### Configuration privée dans Netlify
+
+Projet `soft-tartufo-259d9b` → **Project configuration → Environment variables**. Définir ces valeurs pour le contexte **Production** et la portée **Functions**, puis redéployer :
+
+| Variable | Valeur / rôle |
+| --- | --- |
+| `RESEND_API_KEY` | Clé API Resend avec permission **Sending access**, marquée comme secret ; ne jamais la publier dans GitHub ou dans une conversation. |
+| `ADMIN_EMAIL` | Adresse du compte administrateur existant dans Turso. La variable actuelle peut être conservée si elle correspond déjà au compte. |
+| `ADMIN_APP_URL` | `https://soft-tartufo-259d9b.netlify.app` ; paramètre public pour construire les liens HTTPS sans utiliser le Host de la requête. |
+| `RESET_EMAIL_FROM` | `CV Admin <onboarding@resend.dev>` pour envoyer uniquement à l’adresse du propriétaire du compte Resend, ou une adresse d’un domaine Resend vérifié. |
+
+Resend propose un plan Free sans carte bancaire, limité à 3 000 e-mails par mois et 100 par jour : [tarifs](https://resend.com/pricing), [offre transactionnelle](https://resend.com/products/transactional-emails). Choisir Free et ne pas activer d’offre payante. Créer le compte Resend avec la même adresse que `ADMIN_EMAIL` et vérifier cette adresse. Dans **API Keys**, créer une clé limitée à l’envoi. Sans domaine personnel, `onboarding@resend.dev` est une possibilité de test réservée à l’adresse du propriétaire du compte ; elle ne permet pas d’envoyer à d’autres personnes. Pour étendre les destinataires, un domaine dont vous contrôlez le DNS doit être vérifié : [restriction officielle](https://resend.com/docs/api-reference/errors#validation_error).
+
+L’envoi réel n’est activé qu’après configuration de la clé. Sans clé ou en cas de refus du fournisseur, l’API renvoie HTTP 503 et l’interface affiche l’indisponibilité ; elle ne prétend pas avoir envoyé un mail. La réception dans la boîte Hotmail et un changement réel doivent être vérifiés personnellement après cette configuration.
+
+### Contrôles automatisés
+
+- Parcours complet avec fournisseur Resend simulé, stockage hashé, expiration, jeton non réutilisable et demandes concurrentes.
+- Connexion avec le nouveau mot de passe ; refus de l’ancien et des JWT antérieurs, y compris les JWT créés avant l’ajout de la récupération.
+- Limite persistante de 3 demandes de mail par période de 15 minutes, globale et par IP ; protection contre les formulaires tiers simples.
+- Échec du fournisseur sans changement de mot de passe ; notification de confirmation sans divulgation du mot de passe.
+- Handler Lambda et paquet Netlify : récupération fermée sans configuration e-mail et page de récupération copiée dans les fichiers publiés.
+
+Endpoints : `POST /api/admin/forgot-password` avec `{}`, puis `POST /api/admin/reset-password` avec `{ token, password, confirmation }`. Aucun jeton n’est renvoyé au client lors de la demande de mail.

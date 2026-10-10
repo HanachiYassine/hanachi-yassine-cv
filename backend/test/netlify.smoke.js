@@ -13,6 +13,7 @@ process.env.ADMIN_PASSWORD = randomBytes(24).toString('hex');
 process.env.JWT_SECRET = randomBytes(32).toString('hex');
 process.env.CORS_ORIGINS = 'https://hanachiyassine.github.io';
 process.env.COMMIT_REF = process.env.CV_TEST_COMMIT || 'c'.repeat(40);
+delete process.env.RESEND_API_KEY;
 const bundle = process.env.CV_TEST_BUNDLE;
 if (!bundle) require('../netlify/build.cjs').prepareBuild();
 const { handler } = require(bundle ? path.join(bundle, 'api.js') : '../netlify/functions/api');
@@ -63,4 +64,38 @@ test('un vrai PDF Chromium est transporté en binaire par Lambda, y compris au s
         assert.equal(pdf.subarray(0, 5).toString(), '%PDF-');
         assert.ok(pdf.length > 10000 && pdf.length < 4500000);
     }
+});
+
+test('la récupération reste fermée sans fournisseur de mail, dans le handler et le paquet Netlify', async () => {
+    const response = await request('/api/admin/forgot-password', 'POST', {});
+    assert.equal(response.statusCode, 503);
+    assert.equal(JSON.stringify(response).includes('token='), false);
+    assert.equal((await request('/api/admin/reset-password', 'POST', { token: 'invalide' })).statusCode, 400);
+    assert.ok(fs.existsSync(path.join(__dirname, '../netlify/public/admin/reset-password.html')));
+});
+
+async function completeRecovery(resetToken) {
+    const password = randomBytes(24).toString('hex');
+    const body = { token: resetToken, password, confirmation: password };
+    assert.equal((await request('/api/admin/reset-password', 'POST', body)).statusCode, 200);
+    assert.equal((await request('/api/admin/reset-password', 'POST', body)).statusCode, 400);
+    const login = await request('/api/admin/login', 'POST', { email: process.env.ADMIN_EMAIL, password });
+    assert.equal(login.statusCode, 200);
+    const old = await request('/api/admin/login', 'POST', { email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD });
+    assert.equal(old.statusCode, 401);
+}
+
+test('le parcours mail et changement fonctionne aussi depuis le paquet Lambda', async context => {
+    let mail;
+    context.mock.method(global, 'fetch', async (url, options) => {
+        assert.equal(url, 'https://api.resend.com/emails');
+        mail = JSON.parse(options.body);
+        return new Response(JSON.stringify({ id: 'test-mail' }), { status: 200 });
+    });
+    process.env.RESEND_API_KEY = 'unit-test-mail-key';
+    process.env.ADMIN_APP_URL = 'https://cv.example.test';
+    try {
+        assert.equal((await request('/api/admin/forgot-password', 'POST', {})).statusCode, 202);
+        await completeRecovery(new URL(mail.text.match(/https:\/\/\S+/)[0]).hash.slice('#token='.length));
+    } finally { delete process.env.RESEND_API_KEY; }
 });
