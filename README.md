@@ -167,6 +167,8 @@ Le PDF est généré côté serveur à chaque demande ; il ne provient pas du fi
 
 `backend/db.js` ouvre **`backend/cv.db`**, à un chemin relatif au fichier du module, et crée les tables manquantes avec `CREATE TABLE IF NOT EXISTS`. Le dépôt contient déjà une base renseignée. Le démarrage crée le schéma mais n'importe pas automatiquement `data.json`.
 
+Au démarrage, `backend/migrations/20261010-align-cv-aptineo.sql` synchronise une seule fois les données professionnelles de la base fournie avec le CV Aptineo du 6 octobre 2026. Cette migration conserve les identifiants des expériences et sous-projets, les coordonnées personnelles et les comptes d'administration. La table technique `cv_data_migrations` enregistre son application ; les modifications effectuées ensuite depuis l'administration sont conservées aux redémarrages. Le contrôle des identifiants et de l'ordre des expériences limite cette migration à la base prévue par le dépôt.
+
 | Tables | Contenu |
 | --- | --- |
 | `infos`, `profil` | Informations générales et présentation, chacune sur la ligne `id = 1` |

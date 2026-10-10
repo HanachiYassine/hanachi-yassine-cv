@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
 const path = require('path');
 
 const dbPath = path.join(__dirname, 'cv.db');
@@ -119,10 +120,13 @@ const schema = `
     );
 `;
 
+const migrationPath = path.join(__dirname, 'migrations/20261010-align-cv-aptineo.sql');
+const cvMigration = fs.readFileSync(migrationPath, 'utf8');
+
 db.serialize(() => {
-    db.exec(schema, (err) => {
+    db.exec(schema + cvMigration, (err) => {
         if (err) {
-            console.error("Error creating schema:", err);
+            console.error("Error initializing CV database:", err);
         }
     });
 });

@@ -1,7 +1,7 @@
 {
     "infos": {
         "nom": "YASSINE HANNACHI",
-        "titre": "INGÉNIEUR D'ÉTUDES ET DÉVELOPPEMENT JAVA EE – 10 ans d’expérience (7 ans Java EE)",
+        "titre": "INGÉNIEUR D’ÉTUDES ET DÉVELOPPEMENT JAVA EE – Plus de 10 ans d’expérience, dont environ 8 ans sur Java / Angular",
         "adresse": "50 Rue Robes Pierre, 93170 Bagnolet",
         "tel": "07 58 56 77 09",
         "email": "hanachiyassine@hotmail.fr",
@@ -11,24 +11,47 @@
         "nationalite": "Tunisienne",
         "statut": "Célibataire"
     },
-    "profil": "Développeur Full-Stack senior spécialisé en Java/Spring Boot et Angular, avec plus de 10 ans d’expérience dans la conception, l’architecture et la réalisation d’applications web au sein de grands comptes (SNCF, Orange, Ministère, Groupama). Expert sur Java 17/21, Spring Boot 3, Angular 15-18, QueryDSL et PostgreSQL, j’interviens sur des projets complexes intégrant microservices, batchs critiques, optimisation de performances et pipelines CI/CD industrialisés.\nPolyvalent et orienté qualité, je maîtrise l’ensemble du cycle de développement : conception technique, développement backend/frontend, gestion d’état avancée, sécurisation, tests automatisés, revue de code et intégration continue. Reconnu pour ma rigueur, mon autonomie et ma capacité à comprendre rapidement les enjeux métier, j’apporte des solutions robustes, maintenables et évolutives dans des environnements agiles exigeants.",
+    "profil": "Développeur Full-Stack senior spécialisé en Java / Spring Boot et Angular, avec plus de 10 ans d’expérience, dont environ 8 ans sur Java / Angular. Expérience sur les projets SNCF Réseau, Orange, SCOLA pour l’AEFE et GAN Assurances, avec Java 21 / 17, Spring Boot 3, Spring Batch, Angular 21 / 18 / 15, QueryDSL et PostgreSQL.\nConception des architectures backend et frontend, développement des fonctionnalités métier, migration Angular 18 vers 21, optimisation des accès aux données et sécurisation des API. Tests unitaires et d’intégration avec JUnit 5, Mockito, AssertJ et Jest, suivi de la qualité avec SonarQube / JaCoCo, revues de code, contribution aux pipelines CI/CD et accompagnement technique des développeurs en environnement Agile.",
     "competences": {
         "langagesFrameworks": [
-            "Java",
-            "Angular",
-            "Spring Boot",
-            "Spring Data",
-            "JPA",
+            "Java 21 / 17 / 11",
+            "Spring Boot 3",
+            "Spring Batch",
+            "Spring Data JPA",
             "Hibernate",
+            "QueryDSL",
+            "MapStruct",
             "Spring Security",
+            "Keycloak",
             "WS REST",
-            "Angular Library",
-            "Angular Material"
+            "Microservices",
+            "WebSocket / STOMP",
+            "Angular 21 / 18 / 15",
+            "TypeScript",
+            "RxJS",
+            "NGXS",
+            "PrimeNG 21",
+            "Angular Libraries",
+            "Angular Material",
+            "Standalone",
+            "OnPush",
+            "Reactive Forms"
         ],
         "outils": [
             "Maven",
             "Git",
-            "GitLab"
+            "GitLab",
+            "GitLab CI/CD",
+            "Jenkins",
+            "Docker",
+            "Azure",
+            "Jira",
+            "JUnit 5",
+            "Mockito",
+            "AssertJ",
+            "Jest",
+            "SonarQube",
+            "JaCoCo"
         ],
         "serveurs": [
             "Apache Tomcat"
@@ -36,139 +59,217 @@
         "bdd": [
             "PostgreSQL",
             "SQL Server",
-            "MySQL"
+            "MySQL",
+            "H2"
         ],
         "systemes": [
             "MS Windows",
             "Linux"
         ],
         "methodos": [
-            "AGILE SCRUM",
-            "Safe"
+            "Agile Scrum",
+            "SAFe",
+            "Tests unitaires et d’intégration",
+            "Revues de code",
+            "Clean Code"
         ],
         "ide": [
+            "Eclipse",
+            "Spring Tool Suite",
             "IntelliJ",
             "Visual Studio Code"
         ]
     },
     "experiences": [
         {
-            "poste": "Développeur Full-stack Java/Angular",
-            "entreprise": "SNCF",
+            "poste": "Développeur Full Stack Java/Angular Senior",
+            "entreprise": "SNCF RÉSEAU",
             "localisation": "Lille",
             "periode": "05/2024 – Actuel",
-            "projet": "Outils de Pilotage de programmes",
-            "client": "SNCF",
-            "equipe": "1 Scrum Master, 2 PO, 3 Dev, 1 Testeur, 1 Tech Lead",
-            "role": "Développeur Full-stack",
+            "projet": "OPIPRO (Outil de Pilotage des Programmes)",
+            "client": "SNCF Réseau",
+            "equipe": "Développeurs, Product Owners, Business Analysts, testeurs, Scrum Master et Tech Lead",
+            "role": "Développeur Full Stack Java/Angular Senior",
             "missions": [
-                "Développement de fonctionnalités pour la gestion des programmes de maintenance et des infrastructures ferroviaires.",
-                "Création d'interfaces utilisateur dynamiques avec Angular 18 et PrimeNG.",
-                "Intégration avec les services RESTful développés en Spring Boot 3.0.",
-                "Gestion des utilisateurs et des rôles avec Spring Security.",
-                "Optimisation des requêtes SQL avec QueryDSL.",
-                "Développement de tests unitaires et d'intégration (JUnit, Mockito, Jest).",
+                "Initialisation du projet OPIPRO dès son démarrage et mise en place du socle technique dans le respect du cadre d’architecture SNCF.",
+                "Conception de l’architecture interne : couches API REST, services métier, domaine et persistance JPA, avec DTO et mappers MapStruct.",
+                "Intégration du core SNCF et mise en place de H2 pour les tests d’intégration des repositories et de la persistance JPA.",
+                "Développement de fonctionnalités Java 21 / Spring Boot 3 et évolution des API REST pour les fiches opérations, les pré-besoins et les tournées de validation.",
+                "Implémentation des règles de décision, scission et suppression des interventions, avec gestion des transactions et de l’intégrité des données.",
+                "Développement et maintenance des imports ADV / Cache PSS et SIFEM, ainsi que des traitements métier complexes avec Spring Batch.",
+                "Optimisation des recherches PostgreSQL et des projections QueryDSL : filtres et tris serveur, optimisation des accès et prévention des requêtes N+1.",
                 "Mise en place de traitements parallèles pour les appels API et les vérifications en base de données.",
-                "Participation aux cérémonies Scrum (daily, sprint planning, review, retro)."
+                "Sécurisation des endpoints avec Spring Security / Keycloak et application des rôles et autorisations métier.",
+                "Initialisation de l’application Angular OPIPRO et conception de son architecture frontend. Évolution ultérieure du socle vers les composants standalone, le chargement différé et OnPush.",
+                "Migration progressive du frontend Angular 18 → 19 → 20 → 21, avec traitement des incompatibilités de dépendances et des régressions fonctionnelles.",
+                "Adaptation des composants PrimeNG vers la version 21 et stabilisation des formulaires, tableaux et workflows métier après migration.",
+                "Conception de Reactive Forms complexes et gestion des interactions métier avec TypeScript, NGXS et RxJS.",
+                "Optimisation des tableaux et listes par filtrage et tri côté serveur et suivi des éléments avec trackBy.",
+                "Implémentation d’un verrou partagé sur les tournées de validation avec WebSocket / STOMP, synchronisé entre utilisateurs et doté d’un TTL de 60 secondes.",
+                "Écriture de tests unitaires et d’intégration avec JUnit 5, Mockito, AssertJ et Jest pour les règles métier, la persistance et la non-régression frontend.",
+                "Refactoring du code, réduction de la complexité et correction des code smells ; suivi de la qualité et de la couverture avec SonarQube / JaCoCo.",
+                "Contribution aux pipelines de build, de tests et d’analyse Sonar sous GitLab CI/CD et Jenkins, avec Maven.",
+                "Analyse des User Stories, participation au raffinement, aux estimations et aux cérémonies Scrum, puis réalisation des évolutions et correction des anomalies.",
+                "Réalisation de revues de code Java et Angular pour la qualité et la maintenabilité ; échanges avec les développeurs, PO, BA et testeurs sur les règles métier ferroviaires.",
+                "Accompagnement des développeurs dans leur montée en compétence sur Angular, Java et Spring Boot, avec partage des pratiques de développement du projet."
             ],
             "technologies": [
                 "Java 21",
-                "Spring Boot 3.0",
+                "Spring Boot 3",
+                "Spring Data JPA",
+                "Hibernate",
                 "QueryDSL",
-                "Maven",
-                "Angular 18",
-                "PrimeNG",
-                "TypeScript",
+                "MapStruct",
+                "Spring Batch",
+                "Spring Security",
+                "Keycloak",
                 "PostgreSQL",
-                "GitLab",
+                "H2",
+                "Core SNCF",
+                "REST",
+                "WebSocket / STOMP",
+                "Angular 21",
+                "TypeScript",
+                "RxJS",
+                "NGXS",
+                "PrimeNG 21",
+                "JUnit 5",
+                "Mockito",
+                "AssertJ",
+                "Jest",
+                "Maven",
+                "GitLab CI/CD",
+                "Jenkins",
+                "SonarQube",
+                "JaCoCo",
                 "Docker",
-                "CI/CD",
+                "Azure",
+                "Jira",
                 "Scrum"
             ]
         },
         {
-            "poste": "Développeur Full-stack Java/Angular",
-            "entreprise": "OPEN",
+            "poste": "Développeur Full Stack Java/Angular",
+            "entreprise": "OPEN PARIS",
             "localisation": "Paris",
-            "periode": "02/2023 – 04/2024",
-            "projet": "Plateforme de Gestion des Bourses Scolaires",
-            "client": "Ministère de l'Éducation nationale",
-            "equipe": "2 SM, 2 Proxy PO, 1 PO, 9 Dev, 1 Testeur, 1 Tech Lead",
-            "role": "Développeur Full-stack",
+            "periode": "02/2023 – 03/2024",
+            "projet": "SCOLA (Plateforme de Gestion des Bourses Scolaires)",
+            "client": "Agence pour l’enseignement français à l’étranger (AEFE)",
+            "equipe": "1 Product Owner, 2 Proxy Product Owners, 1 Scrum Master, 7 développeurs, testeurs",
+            "role": "Développeur Full Stack Java/Angular",
             "missions": [
-                "Développement des modules de gestion des demandes, des établissements, des campagnes et des paiements.",
-                "Création d'une interface utilisateur réactive avec Angular 15 et Ngxs pour la gestion de l'état.",
-                "Mise en place de batchs pour l'automatisation des tâches récurrentes.",
-                "Amélioration continue du code et participation aux revues de code.",
-                "Participation active aux cérémonies agiles (raffinement, planning poker, rituels Scrum).",
-                "Assurer une couverture de test entre 75 et 90 % (JUnit, Jest)."
+                "Conception et développement des modules pour la gestion des demandes de bourses, des établissements scolaires, des campagnes et des paiements.",
+                "Utilisation d’Angular 15 et NGXS pour développer des interfaces utilisateur réactives et conviviales.",
+                "Écriture de scripts de batch pour automatiser les tâches récurrentes.",
+                "Participation à l’amélioration continue de la qualité du code.",
+                "Revue de code pour maintenir des normes de qualité élevées.",
+                "Participation aux cérémonies Scrum, notamment au raffinement et aux estimations par planning poker.",
+                "Écriture et amélioration des tests Java et Angular avec JUnit et Jest, avec suivi de la couverture de code."
             ],
             "technologies": [
                 "Java 17",
                 "Spring Boot 3.0",
-                "Angular 15",
-                "Ngxs",
+                "Spring Batch",
+                "Angular 15/16",
+                "NGXS",
                 "PostgreSQL",
-                "QueryDSL",
                 "GitLab",
                 "Maven",
                 "Git",
-                "Scrum"
+                "QueryDSL",
+                "Sonar"
             ]
         },
         {
-            "poste": "Développeur Java",
+            "poste": "Développeur Full Stack Java/Angular",
             "entreprise": "GROUPAMA",
             "localisation": "Lyon",
             "periode": "10/2022 – 01/2023",
-            "projet": "Portail Agences",
-            "client": "GAN Assurance",
-            "equipe": "1 PO, 1 SM, 5 Dev, 2 Release Managers",
-            "role": "Développeur Full-stack",
+            "projet": "Migration d’anciens traitements vers Spring Batch et maintenance des batchs et de l’application de gestion des contrats",
+            "client": "GAN Assurances",
+            "equipe": "1 Product Owner, 1 Scrum Master, 5 développeurs, 2 release managers",
+            "role": "Développeur Full Stack Java/Angular",
             "missions": [
-                "Migration de batchs existants vers Spring Batch pour la mise à jour des contrats et l'export de fichiers CSV.",
-                "Maintenance évolutive et corrective des batchs.",
-                "Correction d'anomalies sur les parties front-end et back-end."
+                "Maintenance des traitements batch et correction des anomalies.",
+                "Correction des anomalies de l’application, côté frontend et backend."
             ],
             "technologies": [
                 "Java 11",
                 "Spring Boot",
-                "Spring Data JPA",
+                "Spring Data",
+                "Spring Batch",
+                "JPA",
                 "Spring Security",
                 "Microservices",
                 "Maven",
                 "Angular Libraries",
                 "Swagger v2",
                 "WS REST",
-                "Angular 13",
+                "Angular 14",
                 "TypeScript",
-                "HTML/CSS",
+                "HTML",
+                "CSS",
                 "Angular Material",
                 "MySQL",
                 "GitLab",
                 "Jira",
                 "IntelliJ",
-                "VS Code",
+                "Visual Studio Code",
                 "Scrum"
             ]
         },
         {
-            "poste": "Développeur Full-stack Java/Angular",
-            "entreprise": "Sofrecom Tunisie (CDI)",
+            "poste": "Développeur Full Stack Java/Angular",
+            "entreprise": "SOFRECOM",
             "localisation": "Tunis",
             "periode": "10/2018 – 09/2022",
             "projets": [
                 {
-                    "titre": "Plateforme de prise de RDV (Orange)",
-                    "contexte": "Permettre aux clients de prendre RDV en boutique avec un conseiller selon le motif.",
-                    "equipe": "2 PO, 1 SM, 4 Dev Full-stack, 1 Testeur, 2 OPS",
-                    "role": "Développeur Full-stack",
+                    "titre": "Plateforme de prise de rendez-vous dans les boutiques Orange",
+                    "contexte": "Plateforme permettant aux clients d’Orange de prendre rendez-vous en boutique avec un conseiller, selon le motif de leur demande.",
+                    "equipe": "2 Product Owners, 1 Scrum Master, 4 développeurs Full Stack, 1 testeur, 2 OPS",
+                    "role": "Développeur Full Stack Java/Angular",
                     "missions": [
-                        "Développement backend des fonctionnalités : gestion des boutiques, conseillers, plannings et prises de RDV.",
-                        "Développement IHM sous forme de librairies Angular intégrables.",
-                        "Conception de l'architecture front (Angular library).",
-                        "Mise en place de batchs de synchronisation avec les référentiels Orange.",
-                        "Corrections front/back et analyse des performances front."
+                        "Développement des fonctionnalités backend de gestion des boutiques, des conseillers, des plannings et des rendez-vous.",
+                        "Développement d’interfaces sous forme de bibliothèques Angular intégrables dans les applications partenaires.",
+                        "Participation à la conception de l’architecture frontend fondée sur des bibliothèques Angular.",
+                        "Développement de traitements batch de synchronisation des boutiques et des conseillers avec le référentiel Orange, sans interface dédiée à leur gestion.",
+                        "Correction des anomalies de l’application, côté frontend et backend.",
+                        "Analyse des performances de l’application côté frontend."
+                    ],
+                    "technologies": [
+                        "Java 11",
+                        "Spring Boot",
+                        "Spring Data",
+                        "Spring Batch",
+                        "JPA",
+                        "Spring Security",
+                        "Microservices",
+                        "Maven",
+                        "Angular Libraries",
+                        "Swagger v2",
+                        "WS REST",
+                        "Angular 13",
+                        "TypeScript",
+                        "HTML",
+                        "CSS",
+                        "Angular Material",
+                        "MySQL",
+                        "GitLab",
+                        "Jira",
+                        "IntelliJ",
+                        "Visual Studio Code",
+                        "Scrum"
+                    ]
+                },
+                {
+                    "titre": "Plateforme de gestion des interactions entre Orange et ses clients",
+                    "contexte": "Référentiel centralisant les échanges entre Orange et ses clients.",
+                    "equipe": "2 Product Owners, 1 Scrum Master, 4 développeurs Full Stack, 1 testeur, 2 OPS",
+                    "role": "Développeur Full Stack Java/Angular",
+                    "missions": [
+                        "Développement des API de gestion des interactions.",
+                        "Développement d’une bibliothèque Angular permettant la création d’une interaction."
                     ],
                     "technologies": [
                         "Java 11",
@@ -181,57 +282,27 @@
                         "Swagger v2",
                         "WS REST",
                         "Angular 13",
-                        "TS",
-                        "HTML/CSS",
-                        "Material",
+                        "TypeScript",
+                        "HTML",
+                        "CSS",
+                        "Angular Material",
                         "MySQL",
                         "GitLab",
                         "Jira",
                         "IntelliJ",
-                        "VS Code",
+                        "Visual Studio Code",
                         "Scrum"
                     ]
                 },
                 {
-                    "titre": "Plateforme de gestion des interactions (Orange)",
-                    "contexte": "Référentiel traçant les échanges d'information entre Orange et les clients.",
-                    "equipe": "2 PO, 1 SM, 4 Dev Full-stack, 1 Testeur, 2 OPS",
-                    "role": "Développeur Full-stack",
+                    "titre": "Plateforme de gestion dynamique des files d’attente dans les boutiques Orange",
+                    "contexte": "Dans le cadre de sa transformation digitale et de sa vision client à 360°, Orange développe un système de gestion dynamique des files d’attente dans ses boutiques.",
+                    "equipe": "2 Product Owners, 1 Scrum Master, 4 développeurs Full Stack, 1 testeur, 2 OPS",
+                    "role": "Développeur Full Stack Java/Angular",
                     "missions": [
-                        "Développement des APIs métiers (plusieurs domaines fonctionnels).",
-                        "Développement d'une librairie Angular pour la création d'une interaction."
-                    ],
-                    "technologies": [
-                        "Java 11",
-                        "Spring Boot",
-                        "Spring Data JPA",
-                        "Spring Security",
-                        "Microservices",
-                        "Maven",
-                        "Angular Libraries",
-                        "Swagger v2",
-                        "WS REST",
-                        "Angular 13",
-                        "TS",
-                        "HTML/CSS",
-                        "Material",
-                        "MySQL",
-                        "GitLab",
-                        "Jira",
-                        "IntelliJ",
-                        "VS Code",
-                        "Scrum"
-                    ]
-                },
-                {
-                    "titre": "Gestion dynamique des files d’attente (Orange Boutiques)",
-                    "contexte": "SI pour piloter les files d’attente dans les boutiques (vue 360 client).",
-                    "equipe": "2 PO, 1 SM, 4 Dev Full-stack, 1 Testeur, 2 OPS",
-                    "role": "Développeur Full-stack",
-                    "missions": [
-                        "Développement des APIs métiers.",
-                        "Développement de batchs d'import des RDV.",
-                        "Développement et maintenance de l'IHM."
+                        "Développement des API de gestion des files d’attente.",
+                        "Développement de traitements batch pour importer les rendez-vous à jour.",
+                        "Développement et maintenance des interfaces utilisateur."
                     ],
                     "technologies": [
                         "Java 11",
@@ -242,18 +313,22 @@
                         "Swagger v2",
                         "WS REST",
                         "Angular 12",
-                        "TS",
-                        "HTML/CSS",
-                        "Material",
+                        "TypeScript",
+                        "HTML",
+                        "CSS",
+                        "Angular Material",
                         "MySQL",
                         "GitLab",
                         "Jira",
                         "IntelliJ",
-                        "VS Code",
+                        "Visual Studio Code",
                         "Scrum"
                     ]
                 }
-            ]
+            ],
+            "client": "Orange France (DISF) — Direction système d’information France",
+            "equipe": "2 Product Owners, 1 Scrum Master, 4 développeurs Full Stack, 1 testeur, 2 OPS",
+            "role": "Développeur Full Stack Java/Angular"
         },
         {
             "poste": "Développeur",
@@ -263,46 +338,49 @@
             "projets": [
                 {
                     "titre": "Application mobile Medespoir",
-                    "contexte": "Agence de tourisme médical – app mobile de demandes de devis.",
-                    "equipe": "1 Front, 1 Back",
-                    "role": "Développeur IONIC (front)",
+                    "contexte": "Application mobile permettant aux clients de Medespoir, agence de tourisme médical en Tunisie, de demander des devis.",
+                    "equipe": "1 développeur Front, 1 développeur backend",
+                    "role": "Développeur frontend Ionic",
                     "missions": [
-                        "Développement des IHM complètes.",
-                        "Consommation des WS REST.",
-                        "Mise en place du template et de la structure du projet.",
-                        "Suivi des maquettes et des bonnes pratiques UI/UX."
+                        "Développement de toutes les interfaces de l’application.",
+                        "Consommation des services web REST fournis par l’équipe backend.",
+                        "Développement des gabarits d’interface et de la structure de l’application.",
+                        "Suivi des maquettes fournies par le client.",
+                        "Suivi des bonnes pratiques UI/UX."
                     ],
                     "technologies": [
-                        "IONIC 3",
-                        "TS",
-                        "HTML/CSS",
+                        "Ionic 3",
+                        "TypeScript",
+                        "HTML",
+                        "CSS",
                         "Bootstrap",
-                        "REST",
+                        "WS REST",
                         "Git",
                         "Trello",
-                        "VS Code"
+                        "Visual Studio Code"
                     ]
                 },
                 {
-                    "titre": "Android MeeTime (dating)",
-                    "contexte": "Plateforme de dating – conception et dev Android + web",
-                    "equipe": "2 Mobiles, 1 PHP, 1 NodeJS",
-                    "role": "Dév Android & Angular",
+                    "titre": "Application mobile Android MeeTime",
+                    "contexte": "Conception et développement d’une plateforme de rencontres en Tunisie pour TouchLink.",
+                    "equipe": "2 développeurs mobiles, 1 développeur PHP, 1 développeur Node.js",
+                    "role": "Développeur Android, Angular",
                     "missions": [
-                        "Conception de la base de données (MySQL).",
-                        "Développement des fonctionnalités Android.",
-                        "Développement de l'IHM Angular.",
-                        "Mise en place du template et de la structure.",
-                        "Correction des anomalies."
+                        "Participation à la conception de la base de données (MySQL).",
+                        "Développement des fonctionnalités de l’application Android.",
+                        "Développement de l’interface web avec Angular.",
+                        "Développement des gabarits d’interface et de la structure de l’application.",
+                        "Résolution des anomalies dans l’application."
                     ],
                     "technologies": [
                         "Android",
-                        "REST",
-                        "Angular 8",
-                        "TS",
-                        "HTML/CSS",
+                        "WS REST",
+                        "Angular",
+                        "TypeScript",
+                        "HTML",
+                        "CSS",
                         "Git",
-                        "VS Code",
+                        "Visual Studio Code",
                         "Trello"
                     ]
                 }
@@ -315,46 +393,49 @@
             "periode": "12/2016 – 10/2017",
             "projets": [
                 {
-                    "titre": "Prostreet Soccer (mobile)",
-                    "contexte": "Mise en relation recruteurs pro ↔ joueurs de football.",
-                    "equipe": "1 Front, 1 Back",
-                    "role": "Développeur IONIC (front)",
+                    "titre": "Application mobile Prostreet Soccer",
+                    "contexte": "Application permettant la mise en relation entre les recruteurs professionnels et les joueurs de football.",
+                    "equipe": "1 développeur Front, 1 développeur backend",
+                    "role": "Développeur frontend Ionic",
                     "missions": [
-                        "Développement des IHM complètes.",
-                        "Consommation des WS REST.",
-                        "Mise en place du template et de la structure.",
-                        "Intégration des maquettes et respect de l'UI/UX."
+                        "Développement de toutes les interfaces de l’application.",
+                        "Consommation des services web REST fournis par l’équipe backend.",
+                        "Développement des gabarits d’interface et de la structure de l’application.",
+                        "Suivi des maquettes fournies par le client.",
+                        "Suivi des bonnes pratiques UI/UX."
                     ],
                     "technologies": [
-                        "IONIC 3",
-                        "TS",
-                        "HTML/CSS",
+                        "Ionic 3",
+                        "TypeScript",
+                        "HTML",
+                        "CSS",
                         "Bootstrap",
-                        "REST",
+                        "WS REST",
                         "Git",
                         "Trello",
-                        "VS Code"
+                        "Visual Studio Code"
                     ]
                 },
                 {
-                    "titre": "Fleetsi (web)",
-                    "contexte": "Gestion collaborateurs terrain par localisation.",
-                    "equipe": "1 Mobile, 1 NodeJS",
-                    "role": "Développeur Ionic / Angular",
+                    "titre": "Application web Fleetsi",
+                    "contexte": "Application permettant la gestion des collaborateurs sur le terrain par leur localisation.",
+                    "equipe": "1 développeur mobile, 1 développeur Node.js",
+                    "role": "Développeur Ionic, Angular",
                     "missions": [
-                        "Développement des fonctionnalités IONIC.",
-                        "Développement de l'IHM Angular.",
-                        "Mise en place du template et de la structure.",
-                        "Correction des anomalies."
+                        "Développement des fonctionnalités de l’application avec Ionic.",
+                        "Développement de l’interface avec Angular.",
+                        "Développement des gabarits d’interface et de la structure de l’application.",
+                        "Résolution des anomalies dans l’application."
                     ],
                     "technologies": [
-                        "IONIC 3",
-                        "REST",
-                        "Angular 8",
-                        "TS",
-                        "HTML/CSS",
+                        "Ionic 3",
+                        "WS REST",
+                        "Angular",
+                        "TypeScript",
+                        "HTML",
+                        "CSS",
                         "Git",
-                        "VS Code",
+                        "Visual Studio Code",
                         "Trello"
                     ]
                 }
@@ -362,41 +443,43 @@
         },
         {
             "poste": "Développeur PHP",
-            "entreprise": "MINDENGINEERING (CDD)",
+            "entreprise": "MindEngineering",
             "localisation": "Tunis",
             "periode": "12/2015 – 11/2016",
             "projets": [
                 {
-                    "titre": "Carnet Adresses (web)",
-                    "contexte": "Gestion des répertoires et carnets d’adresses.",
-                    "equipe": "1 Dev PHP",
+                    "titre": "Application web Carnet Adresses",
+                    "contexte": "Application permettant la gestion des répertoires et des carnets d’adresses.",
+                    "equipe": "1 développeur PHP",
                     "role": "Développeur PHP",
                     "missions": [
-                        "Développement des IHM complètes.",
-                        "Conception de la base de données (MySQL)."
+                        "Développement de toutes les interfaces de l’application.",
+                        "Participation à la conception de la base de données (MySQL)."
                     ],
                     "technologies": [
                         "CodeIgniter 3",
                         "jQuery",
-                        "HTML/CSS",
+                        "HTML",
+                        "CSS",
                         "Bootstrap"
                     ]
                 },
                 {
-                    "titre": "MIND-IBILLING (web)",
-                    "contexte": "Gestion devis, commandes, factures clients.",
-                    "equipe": "2 Dev PHP",
+                    "titre": "Application web MIND-Billings",
+                    "contexte": "Application de gestion des factures, des devis et des commandes clients.",
+                    "equipe": "2 développeurs PHP",
                     "role": "Développeur PHP",
                     "missions": [
-                        "Développement des fonctionnalités complètes.",
-                        "Mise en place du template et de la structure.",
-                        "Correction des anomalies."
+                        "Développement des fonctionnalités de gestion des factures, des devis et des commandes clients.",
+                        "Développement des gabarits d’interface et de la structure de l’application.",
+                        "Résolution des anomalies dans l’application."
                     ],
                     "technologies": [
                         "CakePHP",
                         "jQuery",
                         "Bootstrap",
-                        "HTML/CSS",
+                        "HTML",
+                        "CSS",
                         "Git"
                     ]
                 }
@@ -410,9 +493,9 @@
             "diplome": "Baccalauréat – Section Informatique"
         },
         {
-            "etab": "Institut Supérieur des Études Technologiques, Tunis",
+            "etab": "ISET Charguia",
             "periode": "09/2012 – 06/2015",
-            "diplome": "Licence en Informatique"
+            "diplome": "Licence appliquée en technologie de l’informatique"
         }
     ],
     "langues": [
