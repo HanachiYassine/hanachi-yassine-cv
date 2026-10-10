@@ -93,7 +93,7 @@ Dans le même `.env`, remplacer la configuration de persistance :
 
 ```dotenv
 DATABASE_PROVIDER=turso
-TURSO_DATABASE_URL=libsql://adresse-de-votre-base.turso.io
+TURSO_DATABASE_URL=libsql://cv-hanachiyassine.aws-eu-west-1.turso.io
 TURSO_AUTH_TOKEN=jeton-a-renseigner-localement
 ```
 
@@ -199,13 +199,16 @@ GitHub Pages héberge uniquement le frontend Angular. L’API Express, la géné
 
 ### 1. Turso
 
-Créer une base Turso compatible libSQL et conserver son URL et un jeton d’accès en écriture. Le backend crée les tables et importe le CV initial lorsque la base est vide. Les comptes administrateurs et sauvegardes sont ensuite conservés dans cette base.
+L’URL de base fournie pour ce projet est `libsql://cv-hanachiyassine.aws-eu-west-1.turso.io`. Elle est préremplie dans `render.yaml` et `backend/.env.example`. La connexion distante reste à vérifier avec un jeton d’accès en écriture ; l’URL seule ne permet pas de lire ou modifier la base.
+
+Enregistrer ce jeton dans le paramètre sécurisé `TURSO_AUTH_TOKEN` de Render ou dans le fichier local `backend/.env`, jamais dans le dépôt. Le backend crée les tables et importe le CV initial lorsque la base est vide. Les comptes administrateurs et sauvegardes sont ensuite conservés dans cette base.
 
 ### 2. Backend Render
 
 Créer un Blueprint à partir de ce dépôt et de `render.yaml`. Il définit un service Docker sur l’offre `free`, un contrôle `/health` et le mode Turso. Renseigner dans Render :
 
-- `TURSO_DATABASE_URL` et `TURSO_AUTH_TOKEN`.
+- `TURSO_DATABASE_URL`, préremplie avec l’URL de la base du projet ; à vérifier lors de la création du service.
+- `TURSO_AUTH_TOKEN`, à saisir dans le paramètre sécurisé correspondant.
 - `ADMIN_EMAIL` et `ADMIN_PASSWORD` pour le premier compte.
 - `JWT_SECRET`, généré par le Blueprint.
 - `CORS_ORIGINS`, avec l’origine du site frontend, par défaut `https://hanachiyassine.github.io`.

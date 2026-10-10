@@ -15,7 +15,7 @@ services:
       - key: DATABASE_PROVIDER
         value: turso
       - key: TURSO_DATABASE_URL
-        sync: false
+        value: libsql://cv-hanachiyassine.aws-eu-west-1.turso.io
       - key: TURSO_AUTH_TOKEN
         sync: false
       - key: JWT_SECRET
