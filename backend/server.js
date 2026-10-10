@@ -35,12 +35,13 @@ app.use('/api/admin', auth.router);
 // Admin Experience Routes
 app.use('/api/admin/experiences', adminExperiencesRoutes);
 app.use('/api/admin', require('./admin-cv.routes'));
-app.get('/health', (req, res) => res.json({ status: 'ok', commit: process.env.RENDER_GIT_COMMIT || undefined }));
+app.get('/health', (req, res) => res.json({ status: 'ok',
+    commit: process.env.CV_GIT_COMMIT || process.env.RENDER_GIT_COMMIT || undefined }));
 
 // PDF généré depuis le même CV que l’API publique.
 app.get('/api/pdf', require('./http-utils').route(async (req, res) => {
     const pdf = await require('./pdf.service').generatePdf();
-    res.set('Cache-Control', 'no-store').contentType('application/pdf').send(pdf);
+    res.set('Cache-Control', 'no-store').contentType('application/pdf').send(Buffer.from(pdf));
 }));
 
 app.use((error, req, res, next) => {

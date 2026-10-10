@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
-      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
     steps:
       - uses: actions/checkout@v6
       - name: Signaler les paramètres manquants avant publication
@@ -26,13 +25,31 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Vérifier les contrôles du backend en ligne
-        run: node --test scripts/check-live-backend.test.cjs
+        run: node --test scripts/check-live-backend.test.cjs scripts/check-deployment-config.test.cjs
       - name: Construire le conteneur du backend
         run: docker build --tag cv-backend .
       - name: Vérifier API, transactions et sauvegardes dans le conteneur
         run: docker run --rm --env NODE_ENV=test cv-backend npm test
       - name: Vérifier la génération réelle du PDF dans le conteneur
         run: docker run --rm --env NODE_ENV=test cv-backend npm run test:pdf
+  serverless:
+    name: Vérifier API et PDF dans le handler Netlify
+    runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci --prefix backend --no-audit --no-fund
+      - run: npm run test:netlify --prefix backend
+      - name: Construire le paquet Netlify sans accès au compte
+        run: npx --yes netlify-cli@27.12.0 build --offline
+      - name: Vérifier les mêmes endpoints dans le paquet final
+        run: npm run test:bundle --prefix backend
   frontend:
     runs-on: ubuntu-latest
     env:
@@ -54,24 +71,21 @@ jobs:
           path: dist/angular-quickstart
   deploy-backend:
     if: github.ref == 'refs/heads/main'
-    needs: [backend, frontend, deployment-config]
+    needs: [backend, serverless, frontend, deployment-config]
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: write
     env:
-      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
       PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
     steps:
       - uses: actions/checkout@v6
-      - name: Déclencher le déploiement Render du commit vérifié
-        shell: bash
-        run: |
-          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
-            echo "Configurer le secret RENDER_DEPLOY_HOOK_URL."
-            exit 1
-          fi
-          curl --fail --silent --show-error --connect-timeout 15 --max-time 60 --output /dev/null \
-            --get --data-urlencode "ref=${GITHUB_SHA}" "$RENDER_DEPLOY_HOOK_URL"
-      - name: Attendre le commit Render et vérifier CV, CORS et PDF
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Envoyer le commit vérifié à la branche de production Netlify
+        run: git push origin HEAD:refs/heads/netlify-production
+      - name: Vérifier le commit publié, le CV, CORS et le PDF
         run: node scripts/check-live-backend.cjs
   deploy-pages:
     if: github.ref == 'refs/heads/main'

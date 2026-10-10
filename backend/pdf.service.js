@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
-const puppeteer = require('puppeteer');
 const { getCvData } = require('./cv.service');
 let busy = false;
 
@@ -21,18 +20,33 @@ async function printPage(browser, html) {
         margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' } });
 }
 
+async function launchBrowser() {
+    if (process.env.CV_SERVERLESS === 'true') {
+        const { default: chromium } = require('@sparticuz/chromium-min');
+        const puppeteer = require('puppeteer-core');
+        const pack = 'https://github.com/Sparticuz/chromium/releases/download/v153.0.0/chromium-v153.0.0-pack.x64.tar';
+        return puppeteer.launch({ headless: 'shell', timeout: 30000,
+            executablePath: await chromium.executablePath(pack), args: chromium.args });
+    }
+    return require('puppeteer').launch({ headless: true, timeout: 30000,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
+}
+
+async function closeBrowser(browser) {
+    try { if (browser) await browser.close(); } finally { busy = false; }
+}
+
 async function generatePdf() {
     if (busy) { const error = new Error('Génération PDF en cours. Réessayez dans quelques secondes.'); error.status = 503; throw error; }
     busy = true;
     let browser;
     try {
         const html = await renderHtml();
-        browser = await puppeteer.launch({ headless: true, timeout: 30000,
-            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
+        browser = await launchBrowser();
         return await printPage(browser, html);
     } finally {
-        try { if (browser) await browser.close(); } finally { busy = false; }
+        await closeBrowser(browser);
     }
 }
 

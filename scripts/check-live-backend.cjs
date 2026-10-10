@@ -17,10 +17,10 @@ async function waitForCommit(config) {
             const health = await (await request(config, '/health')).json();
             if (health.status === 'ok' && health.commit === config.commit) return;
         } catch { /* Le service peut être indisponible pendant sa construction ou son réveil. */ }
-        console.log('En attente du commit vérifié sur Render…');
+        process.stdout.write('En attente du commit vérifié sur le backend…\n');
         await pause(config.intervalMs ?? 10000);
     } while (Date.now() < deadline);
-    throw new Error('Render n’a pas démarré le commit vérifié dans le délai imparti.');
+    throw new Error('Le backend n’a pas démarré le commit vérifié dans le délai imparti.');
 }
 
 function checkCors(response, config) {
