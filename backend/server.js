@@ -46,6 +46,7 @@ app.get('/api/pdf', require('./http-utils').route(async (req, res) => {
 
 app.use((error, req, res, next) => {
     console.error('Request failed:', error.code || error.status || 'internal');
+    if (process.env.NODE_ENV === 'test') console.error(error.stack);
     res.status(error.status || 500).json({ message: error.status ? error.message : 'Erreur interne du serveur.' });
 });
 

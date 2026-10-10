@@ -17,7 +17,9 @@
 
 [functions]
   node_bundler = "zisi"
-  included_files = ["schema.sql", "data.json", "template.ejs", "migrations/*.sql", "../src/assets/cv-profile.jpeg"]
+  # Les exports import/require des navigateurs utilisent des arbres différents.
+  # Conserver les dépendances complètes permet les imports ESM du PDF dans Lambda.
+  included_files = ["schema.sql", "data.json", "template.ejs", "migrations/*.sql", "../src/assets/cv-profile.jpeg", "node_modules/**"]
 
 [[redirects]]
   from = "/api/*"
