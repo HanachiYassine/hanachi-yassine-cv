@@ -181,7 +181,7 @@ npm run test:pdf
 
 Les tests d’intégration utilisent des bases temporaires : données initiales, authentification, modification du CV, sous-projets, sauvegardes sans comptes, restauration, rollback et conservation des données au redémarrage. Le scénario d’initialisation Turso est testé avec le moteur SQL local ; une vérification distante exige le compte Turso configuré.
 
-`test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La génération réelle du PDF reste à confirmer dans ce conteneur : l’environnement de préparation ne dispose pas de Docker.
+`test:pdf` lance réellement Chrome. Son exécution demande les bibliothèques système et les permissions du navigateur. Le workflow le vérifie dans le même conteneur Docker que le backend déployé. La construction du conteneur, les 7 tests backend, la génération réelle du PDF et la compilation Angular ont été validés le 10 octobre 2026 dans [GitHub Actions](https://github.com/HanachiYassine/hanachi-yassine-cv/actions/runs/38015881232). Le déploiement public et la connexion distante à Turso restent à vérifier après activation des comptes.
 
 Le script frontend historique `npm test` lance Karma et ses anciens tests de modèle. Il n’est pas utilisé comme validation du déploiement ; la compilation de production et les tests backend sont les contrôles du workflow. Cypress n’a pas de suite dédiée configurée dans ce projet.
 
@@ -220,3 +220,4 @@ Le paramètre `autoDeployTrigger: 'off'` évite un déploiement Render avant les
 Ces offres gratuites ont des quotas. Render met le service en veille après une période d’inactivité : la première consultation peut attendre son réveil. Les données restent dans Turso. Un nom de domaine personnalisé acheté séparément n’est pas nécessaire.
 
 Documentation officielle : [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Render gratuit](https://render.com/docs/free), [déclenchement Render](https://render.com/docs/deploy-hooks), [Turso JavaScript](https://docs.turso.tech/sdk/ts/reference), [Puppeteer](https://pptr.dev/troubleshooting).
+
