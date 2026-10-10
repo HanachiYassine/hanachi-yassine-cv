@@ -37,6 +37,9 @@
   for = "/admin/*"
   [headers.values]
     Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
 
 [[redirects]]
   from = "/*"
