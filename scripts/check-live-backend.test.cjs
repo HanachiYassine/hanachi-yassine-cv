@@ -60,3 +60,29 @@ for (const [name, overrides, message] of failures) {
         await assert.rejects(runChecks(config), message);
     });
 }
+
+test('accepte une expérience et un sous-projet supplémentaires sans borne fixe', async t => {
+    const expanded = structuredClone(cv);
+    expanded.experiences.push({ poste: 'Développeur', entreprise: 'Autre mission', periode: '2027',
+        projets: [{ titre: 'Nouveau sous-projet', missions: ['Conception'], technologies: ['Java'] }] });
+    const { config } = await fixture(t, { cv: expanded });
+    await runChecks(config);
+});
+
+const contentFailures = [
+    ['expérience historique absente', data => data.experiences.pop(), /Expérience manquante/],
+    ['sous-projet historique absent', data => data.experiences.find(exp => exp.projets)?.projets.pop(), /Sous-projet manquant/],
+    ['ancienne période SNCF', data => { data.experiences[1].periode = '05/2024 – Actuel'; }, /période incorrecte/],
+    ['France Travail absent', data => data.experiences.shift(), /FRANCE TRAVAIL/],
+    ['mission perdue', data => data.experiences[1].missions.shift(), /Mission manquant/],
+    ['technologie perdue', data => data.experiences[0].technologies.pop(), /Technologie manquant/],
+    ['expérience dupliquée', data => data.experiences.push(data.experiences[0]), /dupliquées/]
+];
+for (const [name, edit, message] of contentFailures) {
+    test(`bloque un CV valide mais incomplet : ${name}`, async t => {
+        const data = structuredClone(cv);
+        edit(data);
+        const { config } = await fixture(t, { cv: data });
+        await assert.rejects(runChecks(config), message);
+    });
+}

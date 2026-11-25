@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const { setTimeout: pause } = require('node:timers/promises');
-const { validateCv } = require('../backend/cv-validation');
+const { checkPublishedCv } = require('../backend/cv-content');
+const logger = require('../backend/logger');
 
 async function request(config, path, timeout = 20000) {
     const response = await fetch(new URL(path, config.api), {
@@ -31,11 +32,9 @@ function checkCors(response, config) {
 async function checkCv(config) {
     const response = await request(config, '/api/cv');
     checkCors(response, config);
-    const cv = validateCv(await response.json());
+    const cv = checkPublishedCv(await response.json());
     const projects = cv.experiences.flatMap(exp => exp.projets || []).length;
-    assert.equal(cv.experiences.length, 7, 'Le CV publié doit contenir les sept expériences.');
-    assert.equal(projects, 9, 'Le CV publié doit contenir les neuf sous-projets.');
-    console.log(`CV chargé : ${cv.experiences.length} expériences et ${projects} sous-projets.`);
+    logger.info('CV vérifié', { experiences: cv.experiences.length, projets: projects });
 }
 
 async function checkFrontend(config) {

@@ -120,6 +120,8 @@ Si le port du backend change, ajuster `proxy.conf.json`. Les composants Angular 
 
 `backend/data.json` est conservé comme source initiale du CV. Il n’est pas réécrit automatiquement et ne remplace jamais une base déjà renseignée au redémarrage ou au redéploiement.
 
+La mise à jour du parcours SNCF Réseau → France Travail du 25 novembre 2026 est décrite dans [la procédure dédiée](docs/career-update-2026-11.md) : préparation JSON hors ligne, relecture puis application ciblée et transactionnelle avec sauvegardes et protection contre les modifications concurrentes. Aucun import global du seed n’est nécessaire.
+
 Les tables du CV sont définies dans `backend/schema.sql` : informations, profil, compétences, expériences, missions, technologies, sous-projets, formations, langues, certifications et centres d’intérêt. Les tableaux du CV sont assemblés dans `cv.service.js` à partir de lectures groupées et cohérentes. Les expériences et formations suivent leur ordre enregistré.
 
 Les sous-projets conservent également leurs champs `equipe` et `role` dans la base, l’administration et les exports JSON. Pour un ancien schéma, une migration transactionnelle ajoute ces colonnes et complète les valeurs absentes à partir des sous-projets correspondants de `data.json`, sans remplacer les valeurs déjà renseignées. Elle garde une sauvegarde avant et après la mise à niveau ; elle ne se réexécute pas lorsque les colonnes existent. Le modèle visuel du CV et du PDF est conservé.
@@ -238,7 +240,7 @@ L’origine publique **`PUBLIC_API_URL=https://hanachiyassine.netlify.app`** est
 1. Valide la configuration HTTPS, le backend Linux, les transactions, sauvegardes et le PDF.
 2. Teste le handler Netlify et le paquet final contenant la fonction, puis compile Angular.
 3. Avance `netlify-production` vers le même commit testé ; Netlify publie les fichiers Angular et Express ensemble.
-4. Attend `/health` avec le SHA exact, vérifie `/deployment.json` et Angular à la racine, les sept expériences et neuf sous-projets, CORS et un PDF binaire réel.
+4. Attend `/health` avec le SHA exact, vérifie `/deployment.json` et Angular à la racine, la présence et le contenu des expériences et sous-projets de `data.json` (les ajouts sont acceptés), CORS et un PDF binaire réel.
 
 Les pull requests exécutent les tests sans publication ni paramètres privés. Si Netlify échoue pour un commit déjà promu, corriger sa configuration puis utiliser **Deploys → Retry with latest branch commit**. Relancer ensuite le workflow complet si ses contrôles ont expiré. Le succès d’une compilation ne suffit pas à déclarer le site fonctionnel : vérifier réellement `/`, `/health`, `/api/cv`, `/api/pdf`, CORS et `/admin/` en production.
 
