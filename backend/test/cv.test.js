@@ -14,7 +14,7 @@ process.env.NODE_ENV = 'test';
 const db = require('../db');
 const app = require('../server');
 const source = require('../data.json');
-const { checkPublishedCv } = require('../../scripts/cv-content.cjs');
+const { checkPublishedCv } = require('../cv-content');
 let server, origin, token, original, editedBackup;
 
 before(async () => {

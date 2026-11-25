@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
-const { validateCv } = require('../backend/cv-validation');
-const source = require('../backend/data.json');
+const { validateCv } = require('./cv-validation');
+const source = require('./data.json');
 
 function contains(actual, expected, label) {
     for (const value of expected) assert.ok(actual.includes(value), `${label} manquant : ${value}`);

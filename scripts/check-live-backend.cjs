@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { setTimeout: pause } = require('node:timers/promises');
-const { checkPublishedCv } = require('./cv-content.cjs');
+const { checkPublishedCv } = require('../backend/cv-content');
 const logger = require('../backend/logger');
 
 async function request(config, path, timeout = 20000) {
