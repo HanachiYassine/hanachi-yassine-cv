@@ -1,8 +1,8 @@
 {
     "infos": {
         "nom": "YASSINE HANNACHI",
-        "titre": "INGÉNIEUR D’ÉTUDES ET DÉVELOPPEMENT JAVA EE – Plus de 10 ans d’expérience, dont environ 8 ans sur Java / Angular",
-        "adresse": "50 Rue Robes Pierre, 93170 Bagnolet",
+        "titre": "DÉVELOPPEUR FULL-STACK SENIOR JAVA / ANGULAR – Plus de 10 ans d’expérience, dont environ 8 ans sur Java / Angular",
+        "adresse": "Strasbourg, France",
         "tel": "07 58 56 77 09",
         "email": "hanachiyassine@hotmail.fr",
         "preavis": "3 mois",
@@ -11,11 +11,12 @@
         "nationalite": "Tunisienne",
         "statut": "Célibataire"
     },
-    "profil": "Développeur Full-Stack senior spécialisé en Java / Spring Boot et Angular, avec plus de 10 ans d’expérience, dont environ 8 ans sur Java / Angular. Expérience sur les projets SNCF Réseau, Orange, SCOLA pour l’AEFE et GAN Assurances, avec Java 21 / 17, Spring Boot 3, Spring Batch, Angular 21 / 18 / 15, QueryDSL et PostgreSQL.\nConception des architectures backend et frontend, développement des fonctionnalités métier, migration Angular 18 vers 21, optimisation des accès aux données et sécurisation des API. Tests unitaires et d’intégration avec JUnit 5, Mockito, AssertJ et Jest, suivi de la qualité avec SonarQube / JaCoCo, revues de code, contribution aux pipelines CI/CD et accompagnement technique des développeurs en environnement Agile.",
+    "profil": "Développeur Full-Stack senior spécialisé en Java / Spring Boot et Angular, avec plus de 10 ans d’expérience, dont environ 8 ans sur Java / Angular. Expérience sur les projets SNCF Réseau, Orange, SCOLA pour l’AEFE et GAN Assurances : conception backend et frontend, API REST, traitements Spring Batch, optimisation QueryDSL / PostgreSQL et migration Angular 18 vers 21.\nDepuis le 21 novembre 2026, nouvelle mission chez France Travail à Strasbourg : prise en main et étude de services Java / Quarkus et de traitements Spring Batch autour de la satisfaction des utilisateurs. Responsabilités portant sur la collecte, la transformation et la persistance des données, les API de consultation et les échanges avec un composant web développé par une autre équipe.\nTests unitaires et d’intégration, revues de code, qualité SonarQube / JaCoCo, contribution aux pipelines CI/CD et accompagnement technique des développeurs en environnement Agile.",
     "competences": {
         "langagesFrameworks": [
             "Java 21 / 17 / 11",
             "Spring Boot 3",
+            "Quarkus (mission en cours)",
             "Spring Batch",
             "Spring Data JPA",
             "Hibernate",
@@ -82,36 +83,47 @@
     },
     "experiences": [
         {
+            "poste": "Développeur Java Senior",
+            "entreprise": "FRANCE TRAVAIL",
+            "localisation": "Strasbourg",
+            "periode": "21/11/2026 – Actuel",
+            "projet": "Services de collecte et de consultation de la satisfaction des utilisateurs",
+            "client": "France Travail",
+            "role": "Développeur Java Senior",
+            "missions": [
+                "Mission en démarrage : prise en main du contexte et étude de l’architecture backend avec Java / Quarkus.",
+                "Périmètre confié : traitements Spring Batch de collecte, transformation et persistance de données de satisfaction issues d’applications partenaires.",
+                "Périmètre API : consultation globale et détaillée des données de satisfaction et échanges avec un composant web développé par une autre équipe.",
+                "Travail de conception en cours sur les contrats d’API et l’articulation entre traitements batch, services backend et composant web."
+            ],
+            "technologies": [
+                "Java",
+                "Quarkus",
+                "Spring Batch",
+                "API REST"
+            ]
+        },
+        {
             "poste": "Développeur Full Stack Java/Angular Senior",
             "entreprise": "SNCF RÉSEAU",
             "localisation": "Lille",
-            "periode": "05/2024 – Actuel",
+            "periode": "05/2024 – 13/11/2026",
             "projet": "OPIPRO (Outil de Pilotage des Programmes)",
             "client": "SNCF Réseau",
             "equipe": "Développeurs, Product Owners, Business Analysts, testeurs, Scrum Master et Tech Lead",
             "role": "Développeur Full Stack Java/Angular Senior",
             "missions": [
-                "Initialisation du projet OPIPRO dès son démarrage et mise en place du socle technique dans le respect du cadre d’architecture SNCF.",
-                "Conception de l’architecture interne : couches API REST, services métier, domaine et persistance JPA, avec DTO et mappers MapStruct.",
-                "Intégration du core SNCF et mise en place de H2 pour les tests d’intégration des repositories et de la persistance JPA.",
-                "Développement de fonctionnalités Java 21 / Spring Boot 3 et évolution des API REST pour les fiches opérations, les pré-besoins et les tournées de validation.",
-                "Implémentation des règles de décision, scission et suppression des interventions, avec gestion des transactions et de l’intégrité des données.",
-                "Développement et maintenance des imports ADV / Cache PSS et SIFEM, ainsi que des traitements métier complexes avec Spring Batch.",
-                "Optimisation des recherches PostgreSQL et des projections QueryDSL : filtres et tris serveur, optimisation des accès et prévention des requêtes N+1.",
+                "Initialisation du projet OPIPRO et mise en place du socle applicatif Java 21 / Spring Boot 3 et Angular.",
+                "Conception de l’architecture interne : API REST, services métier, domaine et persistance JPA, avec DTO et mappers MapStruct.",
+                "Développement des fonctionnalités de pilotage de programmes de maintenance ferroviaire, avec gestion des transactions et de l’intégrité des données.",
+                "Développement et maintenance de traitements d’intégration et de transformation des données avec Spring Batch.",
+                "Optimisation des recherches PostgreSQL et des projections QueryDSL : filtres et tris serveur, maîtrise des accès aux données et prévention des requêtes N+1.",
                 "Mise en place de traitements parallèles pour les appels API et les vérifications en base de données.",
-                "Sécurisation des endpoints avec Spring Security / Keycloak et application des rôles et autorisations métier.",
-                "Initialisation de l’application Angular OPIPRO et conception de son architecture frontend. Évolution ultérieure du socle vers les composants standalone, le chargement différé et OnPush.",
-                "Migration progressive du frontend Angular 18 → 19 → 20 → 21, avec traitement des incompatibilités de dépendances et des régressions fonctionnelles.",
-                "Adaptation des composants PrimeNG vers la version 21 et stabilisation des formulaires, tableaux et workflows métier après migration.",
-                "Conception de Reactive Forms complexes et gestion des interactions métier avec TypeScript, NGXS et RxJS.",
-                "Optimisation des tableaux et listes par filtrage et tri côté serveur et suivi des éléments avec trackBy.",
-                "Implémentation d’un verrou partagé sur les tournées de validation avec WebSocket / STOMP, synchronisé entre utilisateurs et doté d’un TTL de 60 secondes.",
-                "Écriture de tests unitaires et d’intégration avec JUnit 5, Mockito, AssertJ et Jest pour les règles métier, la persistance et la non-régression frontend.",
-                "Refactoring du code, réduction de la complexité et correction des code smells ; suivi de la qualité et de la couverture avec SonarQube / JaCoCo.",
-                "Contribution aux pipelines de build, de tests et d’analyse Sonar sous GitLab CI/CD et Jenkins, avec Maven.",
-                "Analyse des User Stories, participation au raffinement, aux estimations et aux cérémonies Scrum, puis réalisation des évolutions et correction des anomalies.",
-                "Réalisation de revues de code Java et Angular pour la qualité et la maintenabilité ; échanges avec les développeurs, PO, BA et testeurs sur les règles métier ferroviaires.",
-                "Accompagnement des développeurs dans leur montée en compétence sur Angular, Java et Spring Boot, avec partage des pratiques de développement du projet."
+                "Sécurisation des API avec Spring Security et gestion des rôles et autorisations métier.",
+                "Modernisation du frontend : migration progressive Angular 18 vers 21 et PrimeNG 21, composants standalone, OnPush et chargement différé.",
+                "Conception de formulaires métier complexes avec Reactive Forms, TypeScript, NGXS et RxJS, et synchronisation entre utilisateurs avec WebSocket / STOMP.",
+                "Écriture de tests unitaires et d’intégration avec JUnit 5, Mockito, AssertJ et Jest ; refactoring et suivi de la qualité avec SonarQube / JaCoCo.",
+                "Contribution aux pipelines GitLab CI/CD et Jenkins, revues de code Java / Angular et accompagnement technique des développeurs."
             ],
             "technologies": [
                 "Java 21",
@@ -125,7 +137,6 @@
                 "Keycloak",
                 "PostgreSQL",
                 "H2",
-                "Core SNCF",
                 "REST",
                 "WebSocket / STOMP",
                 "Angular 21",

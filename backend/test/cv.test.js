@@ -14,6 +14,7 @@ process.env.NODE_ENV = 'test';
 const db = require('../db');
 const app = require('../server');
 const source = require('../data.json');
+const { checkPublishedCv } = require('../../scripts/cv-content.cjs');
 let server, origin, token, original, editedBackup;
 
 before(async () => {
@@ -35,11 +36,12 @@ async function request(url, method = 'GET', body, authorized = true) {
 
 test('initialisation complète depuis data.json et accès public', async () => {
     original = await (await request('/api/cv')).json();
+    checkPublishedCv(original);
     assert.equal(original.profil, source.profil);
     assert.equal(original.infos.nom, source.infos.nom);
     assert.deepEqual(original.competences, source.competences);
-    assert.equal(original.experiences.length, 7);
-    assert.equal(original.experiences.flatMap(exp => exp.projets || []).length, 9);
+    assert.equal(original.experiences.length, source.experiences.length);
+    assert.equal(original.experiences.flatMap(exp => exp.projets || []).length, source.experiences.flatMap(exp => exp.projets || []).length);
     assert.deepEqual(original.experiences.map(exp => exp.missions), source.experiences.map(exp => exp.missions || []));
     assert.deepEqual(original.experiences.flatMap(exp => (exp.projets || []).map(p => [p.equipe, p.role])),
         source.experiences.flatMap(exp => (exp.projets || []).map(p => [p.equipe || '', p.role || ''])));

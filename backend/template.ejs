@@ -19,14 +19,28 @@
 
         /* Bande gauche pleine hauteur sur TOUTES les pages du PDF */
         @media print {
+            .cv-experience-header,
+            .cv-sub-project-title,
+            .cv-section-title,
+            .cv-skill-group h4 {
+                break-inside: avoid;
+                break-after: avoid;
+            }
+
+            .cv-missions li,
+            .cv-techs,
+            .cv-item-left {
+                break-inside: avoid;
+            }
+
             body::before {
                 content: "";
                 position: fixed;
-                top: 0;
+                top: -8mm;
                 left: 0;
                 width: 30%;
                 /* même valeur que .cv-left */
-                height: 100vh;
+                height: calc(100vh + 16mm);
                 /* pleine hauteur de la page */
                 background: #2c3e50;
                 z-index: -1;

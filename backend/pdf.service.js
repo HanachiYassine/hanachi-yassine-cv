@@ -17,7 +17,7 @@ async function printPage(browser, html) {
     page.on('request', request => /^(data:|about:)/.test(request.url()) ? request.continue() : request.abort());
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
     return page.pdf({ format: 'A4', printBackground: true, timeout: 30000,
-        margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' } });
+        margin: { top: '8mm', right: '0px', bottom: '8mm', left: '0px' } });
 }
 
 async function launchBrowser() {

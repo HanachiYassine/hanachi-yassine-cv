@@ -17,6 +17,7 @@ delete process.env.RESEND_API_KEY;
 const bundle = process.env.CV_TEST_BUNDLE;
 if (!bundle) require('../netlify/build.cjs').prepareBuild();
 const { handler } = require(bundle ? path.join(bundle, 'api.js') : '../netlify/functions/api');
+const source = require('../data.json');
 const db = require(bundle ? path.join(bundle, 'backend/db') : '../db');
 after(() => { db.close(); fs.rmSync(directory, { recursive: true, force: true }); });
 
@@ -35,8 +36,8 @@ test('le handler Lambda annonce le commit embarqué et charge le CV complet', as
     assert.equal(response.statusCode, 200);
     assert.equal(response.headers['access-control-allow-origin'], process.env.CORS_ORIGINS);
     const cv = JSON.parse(response.body);
-    assert.equal(cv.experiences.length, 7);
-    assert.equal(cv.experiences.flatMap(exp => exp.projets || []).length, 9);
+    assert.equal(cv.experiences.length, source.experiences.length);
+    assert.equal(cv.experiences.flatMap(exp => exp.projets || []).length, source.experiences.flatMap(exp => exp.projets || []).length);
 });
 
 test('préflight Pages autorisé, origine inconnue refusée et administration protégée', async () => {
